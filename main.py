@@ -2,7 +2,7 @@ import os
 import tabulate
 import json
 
-stock = []
+stock=[]
 
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
@@ -24,8 +24,12 @@ def guardar_datos():
     """
     Guarda los datos del stock en un json
     """
-    with open("stock.json", "wt") as archivo:
-        json.dump(stock, archivo, indent=4)
+    global stock
+    try:
+        with open("stock.json", "wt", encoding="utf-8") as archivo:
+            json.dump(stock, archivo, indent=2)
+    except (PermissionError,TypeError,OSError) as e:
+        print("Error",e)
 
 def registrar_accion():
     """
@@ -40,29 +44,53 @@ def agregar_producto():
     Se le solicita al usuario: tipo de pintura (satinada o brillante), capacidad de la lata (1lt, 5lts, 10lts o 20lts),
     la cantidad de ese producto y su precio por unidad
     """
+    tipo_pintura=["Satinada","Brillante"]
     print("=========== AGREGAR PRODUCTO ===========")
 
-    pintura=input("Que tipo de pintura es: ")
-    while pintura.capitalize().strip() not in ("Satinada","Brillante"):
-        pintura = input("Que tipo de pintura es: ")
+    pintura=input("Que tipo de pintura es (1:Satinada, 2:Brillante): ").strip()
+    while pintura not in ("1","2"):
+        pintura = input("Que tipo de pintura es: ").strip()
+    pintura= tipo_pintura[int(pintura)-1]
 
-    capacidad=int(input("Capacidad de la lata: "))
-    while capacidad not in (1,5,10,20):
-        capacidad = int(input("Capacidad de la lata: "))
 
-    cantidad=int(input("Stock ingresado: "))
-    while cantidad<0:
-        print("No puede ser menor a 0")
-        cantidad = int(input("Stock ingresado: "))
+    capacidad=input("Capacidad de la lata en Lts (1,5,10 o 20): ").strip()
+    while capacidad not in ("1","5","10","20"):
+        capacidad=input("Capacidad de la lata: ").strip()
+    capacidad=f"{int(capacidad)}L"
 
-    precio=int(input("Precio: $"))
-    while precio<=0:
-        print("Debe ser mayor a 0")
-        precio = int(input("Precio: $"))
 
+    while True:
+        try:
+            cantidad=int(input("Stock ingresado: "))
+            while cantidad<0:
+                print("No puede ser menor a 0")
+                cantidad = int(input("Stock ingresado: "))
+            break
+        except ValueError:
+            pass
+
+    while True:
+        try:
+            precio=int(input("Precio: $"))
+            while precio<=0:
+                print("Debe ser mayor a 0")
+                precio = int(input("Precio: $"))
+            break
+        except ValueError:
+            pass
+
+
+    nuevo_id = max([p["id"] for p in stock], default=0) + 1
+
+    producto = {"id": nuevo_id, "tipo": pintura, "capacidad": capacidad, "cantidad": cantidad, "precio": precio}
+    stock.append(producto)
+
+
+    guardar_datos()
     clear()
 
     print("===== PRODUCTO AGREGADO CORRECTAMENTE =====")
+    print(f"Producto ID: {nuevo_id}")
     print(f"Pintura:{pintura}, capacidad:{capacidad}, Stock:{cantidad}, Precio ${precio}\n")
 
 
@@ -324,4 +352,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
