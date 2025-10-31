@@ -1,0 +1,178 @@
+[
+  {
+    "id": 1,
+    "tipo": "Satinada",
+    "capacidad": "1L",
+    "cantidad": 15,
+    "precio": 25,
+    "Umbral de stock": 5
+  },
+  {
+    "id": 2,
+    "tipo": "Brillante",
+    "capacidad": "1L",
+    "cantidad": 10,
+    "precio": 27,
+    "Umbral de stock": 4
+  },
+  {
+    "id": 3,
+    "tipo": "Satinada",
+    "capacidad": "5L",
+    "cantidad": 8,
+    "precio": 110,
+    "Umbral de stock": 3
+  },
+  {
+    "id": 4,
+    "tipo": "Brillante",
+    "capacidad": "5L",
+    "cantidad": 6,
+    "precio": 120,
+    "Umbral de stock": 2
+  },
+  {
+    "id": 5,
+    "tipo": "Satinada",
+    "capacidad": "10L",
+    "cantidad": 3,
+    "precio": 200,
+    "Umbral de stock": 1
+  },
+  {
+    "id": 6,
+    "tipo": "Brillante",
+    "capacidad": "10L",
+    "cantidad": 5,
+    "precio": 210,
+    "Umbral de stock": 2
+  },
+  {
+    "id": 7,
+    "tipo": "Satinada",
+    "capacidad": "20L",
+    "cantidad": 4,
+    "precio": 360,
+    "Umbral de stock": 2
+  },
+  {
+    "id": 8,
+    "tipo": "Brillante",
+    "capacidad": "20L",
+    "cantidad": 7,
+    "precio": 380,
+    "Umbral de stock": 3
+  },
+  {
+    "id": 9,
+    "tipo": "Satinada",
+    "capacidad": "1L",
+    "cantidad": 20,
+    "precio": 24,
+    "Umbral de stock": 6
+  },
+  {
+    "id": 10,
+    "tipo": "Brillante",
+    "capacidad": "1L",
+    "cantidad": 13,
+    "precio": 29,
+    "Umbral de stock": 5
+  },
+  {
+    "id": 11,
+    "tipo": "Satinada",
+    "capacidad": "5L",
+    "cantidad": 10,
+    "precio": 115,
+    "Umbral de stock": 3
+  },
+  {
+    "id": 12,
+    "tipo": "Brillante",
+    "capacidad": "5L",
+    "cantidad": 9,
+    "precio": 125,
+    "Umbral de stock": 3
+  },
+  {
+    "id": 13,
+    "tipo": "Satinada",
+    "capacidad": "10L",
+    "cantidad": 2,
+    "precio": 195,
+    "Umbral de stock": 1
+  },
+  {
+    "id": 14,
+    "tipo": "Brillante",
+    "capacidad": "10L",
+    "cantidad": 4,
+    "precio": 205,
+    "Umbral de stock": 2
+  },
+  {
+    "id": 15,
+    "tipo": "Satinada",
+    "capacidad": "20L",
+    "cantidad": 6,
+    "precio": 370,
+    "Umbral de stock": 2
+  },
+  {
+    "id": 16,
+    "tipo": "Brillante",
+    "capacidad": "20L",
+    "cantidad": 1,
+    "precio": 390,
+    "Umbral de stock": 2
+  },
+  {
+    "id": 17,
+    "tipo": "Satinada",
+    "capacidad": "1L",
+    "cantidad": 1,
+    "precio": 26,
+    "Umbral de stock": 3
+  },
+  {
+    "id": 18,
+    "tipo": "Brillante",
+    "capacidad": "5L",
+    "cantidad": 1,
+    "precio": 118,
+    "Umbral de stock": 4
+  },
+  {
+    "id": 19,
+    "tipo": "Satinada",
+    "capacidad": "10L",
+    "cantidad": 1,
+    "precio": 205,
+    "Umbral de stock": 3
+  },
+  {
+    "id": 20,
+    "tipo": "Brillante",
+    "capacidad": "20L",
+    "cantidad": 1,
+    "precio": 400,
+    "Umbral de stock": 1
+  },
+  {
+    "id": 21,
+    "tipo": "Satinada",
+    "capacidad": "1L",
+    "cantidad": 1,
+    "precio": 1,
+    "Umbral de stock": 1
+  },
+  {
+    "id": 22,
+    "tipo": "Satinada",
+    "capacidad": "1L",
+    "cantidad": 2,
+    "precio": 1,
+    "Umbral de stock": 1
+  }
+]

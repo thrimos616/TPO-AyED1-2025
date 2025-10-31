@@ -1,0 +1,17 @@
+[2025-10-30 20:52:44] Búsqueda de producto: Criterios: Tipo de pintura | Resultados: 12
+[2025-10-30 20:53:15] Búsqueda de producto: Criterios: Tipo de pintura, Capacidad | Resultados: 5
+[2025-10-30 20:57:52] Búsqueda de producto: Criterios: Tipo de pintura, ID | Resultados: 1
+[2025-10-30 21:29:53] Consulta de stock bajo: Sin resultados
+[2025-10-30 21:30:09] Búsqueda de producto: Criterios: Tipo de pintura | Resultados: 12
+[2025-10-30 21:30:46] Consulta de stock bajo: Sin resultados
+[2025-10-30 21:31:38] Consulta de stock bajo: 1 productos encontrados
+[2025-10-30 21:38:47] Búsqueda de producto: Criterios: Tipo de pintura | Resultados: 12
+[2025-10-30 21:45:32] Consulta de stock bajo: 6 productos con stock bajo
+[2025-10-30 21:45:44] Búsqueda de producto: Criterios: ID | Resultados: 1
+[2025-10-30 21:46:22] Consulta de stock bajo: 6 productos con stock bajo
+[2025-10-30 21:52:18] Consulta de stock bajo: 6 productos con stock bajo
+[2025-10-30 21:52:21] Consulta de stock bajo: 6 productos con stock bajo
+[2025-10-30 21:52:56] Consulta de stock bajo: 6 productos con stock bajo
+[2025-10-30 21:54:22] Exportar CSV: Éxito - 22 productos exportados a 'export_stock_20251030_215422.csv'
+[2025-10-30 21:55:20] Exportar CSV: Falló - sin productos cargados
+[2025/10/30 22:00:31] Búsqueda de producto: Criterios: ID | Resultados: 1
