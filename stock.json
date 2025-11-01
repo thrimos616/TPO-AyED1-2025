@@ -1,3 +1,9 @@
 [
-
+    {
+        "id": 2,
+        "tipo": "Brillante",
+        "capacidad": "5L",
+        "cantidad": 20,
+        "precio_unidad": 20000
+    }
 ]

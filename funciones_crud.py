@@ -2,6 +2,7 @@
 
 import os
 import datetime
+import tabulate 
 import json
 
 # Funciones genericas
@@ -204,12 +205,108 @@ def agregar_producto():
 def modificar_producto():
     """
     Modifica un producto existente en el stock
-    Se le pide al usuario seleccionar entre, tipo de producto o precio de unidad
+    Se le pide al usuario seleccionar entre: tipo de producto, precio de unidad o capacidad
     """
+    
     print("=========== MODIFICAR PRODUCTO ===========")
+    
     listar_productos()
-    input("ID del producto a modificar: ")
+
+    stock = cargar_datos()
+    
+    id_producto = int(input("ID del producto a modificar: "))
+
+    while True:
+
+        try:
+
+            if id_producto == stock["id"]:
+
+                print("1: Tipo de producto | 2: Precio unidad | 3: Capacidad")
+
+                op = int(input("Ingrese el atributo a modificar: "))
+
+                break
+
+        except ValueError:
+
+            print("xd")
+
+    if op == 1:
+        
+        while True:
+
+            try:
+
+                print("1: Satinada | 2: Brillante\n")
+
+                pintura_tipo = int(input("Ingrese el tipo de pintura: "))
+
+                if pintura_tipo in (1, 2):
+
+                    stock["id"] == pintura_tipo
+
+                    break
+
+                else:
+
+                    print("Opción inválida. Ingrese 1 o 2.")
+
+            except ValueError:
+
+                print("El valor ingresado es incorrecto. Solo se aceptan valores numericos.")
+    
+    elif op == 2:
+
+        while True:
+
+            try:
+
+                print("1: 1L | 2: 5L | 3: 10L | 4: 20L\n")
+
+                pintura_capacidad = int(input("Ingrese la capacidad de la lata: "))
+
+                if pintura_capacidad in (1, 2, 3, 4):
+
+                    stock["id"] == pintura_capacidad
+
+                    break
+
+                else:
+
+                    print("Valor fuera de rango. Debe ingresar valores entre 1 y 4")
+
+            except ValueError:
+
+                print("El valor ingresado es incorrecto. Solo se aceptan valores numericos.")
+
+    elif op == 3:
+
+        while True:
+
+            try:
+
+                precio_unidad = int(input("Ingrese el precio por unidad: "))
+
+                if precio_unidad > 0:
+
+                    stock["id"] == precio_unidad
+
+                    break
+
+                else:
+
+                    print("Debe ingresar un precio mayor que 0.")
+
+            except ValueError:
+
+                print("El valor ingresado es inválido. No se aceptan letras ni valores numericos negativos.")
+
+    # Funciones genericas
+    stock.append(producto)
+    guardar_datos(stock)
     clear()
+
     print("===== PRODUCTO MODIFICADO CORRECTAMENTE =====")
 
     while True:
@@ -261,18 +358,17 @@ def listar_productos():
     Muestra por pantalla todos los productos del stock en forma de tabla
     Cada producto debe mostrar: ID, tipo de pintura, capacidad (lts), cantidad, precio de la unidad
     """
-    datos = [
-        [1,"Pintura Satinada", "1L", 10, 1000],
-        [2,"Pintura Satinada", "5L", 5, 5000],
-        [3,"Pintura Brillante", "10L", 2, 10000]
-    ]
 
+    stock = cargar_datos()
 
-    titulos = ["ID","Tipo", "Capacidad", "Cantidad", "Precio"]
+    if not stock:
 
-    print("===========================================")
-    print(tabulate.tabulate(datos, titulos))
-    print("===========================================")
+        print("===== No hay productos en stock =====")
+
+        return
+
+    print(tabulate.tabulate(stock, headers="keys", tablefmt="grid")) # Muestra el dic como una tabla
+
 
 
 
