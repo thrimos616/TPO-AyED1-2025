@@ -1,11 +1,10 @@
 # Funciones principales del sistema (Create, Read, Update, Delete)
 
 import os
-import tabulate
 import datetime
 import json
 
-stock = []
+# Funciones genericas
 
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
@@ -15,58 +14,174 @@ def cargar_datos():
     Carga los datos del stock desde un json
     Inicia la lista "stock" con los productos existentes
     """
-    global stock
+    
     try:
-        with open("stock.json", "rt", encoding="utf-8") as stock_json:
-                stock = json.load(stock_json)
-    except (FileNotFoundError,OSError,json.JSONDecodeError):
-        stock = []
+
+        with open("stock.json", "r", encoding="utf-8") as stock_json:
+
+            return json.load(stock_json)
+
+    except (FileNotFoundError, json.JSONDecodeError):
+
+        print("Archivo no encontrado.")
+
+        return []
 
 
-def guardar_datos():
+def guardar_datos(datos):
     """
     Guarda los datos del stock en un json
     """
-    with open("stock.json", "wt") as archivo:
-        json.dump(stock, archivo, indent=4)
+
+    try: 
+
+        with open("stock.json", "w", encoding="utf-8") as f:
+
+            json.dump(datos, f, ensure_ascii=False, indent=4)
+            # ensure_ascii=False: Permite el uso de tildes
+            # indent=4: Agrega sangrias
+    
+    except OSError:
+
+        print("El archivo no pudo ser guardado.")
+
+# Funciones propias del sistema
+
+def identificar_accion():
+    """
+    Identifica la accion realizada por el usuario para agregarla al historial
+    """
+
+    """
+   
+                ("1", "Agregar producto", agregar_producto),
+                ("2", "Modificar producto", modificar_producto),
+                ("3", "Eliminar producto", eliminar_producto),
+                ("6", "Registrar ventas", registrar_venta),
+                ("8", "Exportar stock a csv"
+    """
+
+    pass
 
 def registrar_accion():
     """
     Evalua que accion fue realizada en el sistema y la registra en un historial
     """
 
-    pass
+    fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    
 
 def agregar_producto():
     """
-    Agrega un nuevo producto al stock
+    Agrega un nuevo producto al stock.
     Se le solicita al usuario: tipo de pintura (satinada o brillante), capacidad de la lata (1lt, 5lts, 10lts o 20lts),
-    la cantidad de ese producto y su precio por unidad
+    la cantidad de ese producto y su precio por unidad.
     """
     print("=========== AGREGAR PRODUCTO ===========")
 
-    pintura=input("Que tipo de pintura es: ")
-    while pintura.capitalize().strip() not in ("Satinada","Brillante"):
-        pintura = input("Que tipo de pintura es: ")
+    # Tipo de pintura
+    while True:
 
-    capacidad=int(input("Capacidad de la lata: "))
-    while capacidad not in (1,5,10,20):
-        capacidad = int(input("Capacidad de la lata: "))
+        try:
 
-    cantidad=int(input("Stock ingresado: "))
-    while cantidad<0:
-        print("No puede ser menor a 0")
-        cantidad = int(input("Stock ingresado: "))
+            print("1: Satinada | 2: Brillante\n")
 
-    precio=int(input("Precio: $"))
-    while precio<=0:
-        print("Debe ser mayor a 0")
-        precio = int(input("Precio: $"))
+            pintura_tipo = int(input("Ingrese el tipo de pintura: "))
 
+            if pintura_tipo in (1, 2):
+
+                tipo_producto = "Satinada" if pintura_tipo == 1 else "Brillante"
+                
+                id_tipo = pintura_tipo  
+
+                break
+
+            else:
+
+                print("Opción inválida. Ingrese 1 o 2.")
+
+        except ValueError:
+
+            print("El valor ingresado es incorrecto. Solo se aceptan valores numericos.")
+
+    # Capacidad de la lata
+    while True:
+
+        try:
+
+            print("1: 1L | 2: 5L | 3: 10L | 4: 20L\n")
+
+            pintura_capacidad = int(input("Ingrese la capacidad de la lata: "))
+
+            if pintura_capacidad in (1, 2, 3, 4):
+
+                break
+
+            else:
+
+                print("Valor fuera de rango. Debe ingresar valores entre 1 y 4")
+
+        except ValueError:
+
+            print("El valor ingresado es incorrecto. Solo se aceptan valores numericos.")
+
+    # Cantidad stock ingresado
+    while True:
+
+        try:
+
+            cantidad_unidades = int(input("Ingrese la cantidad de unidades: "))
+
+            if cantidad_unidades > 0:
+
+                break
+
+            else:
+
+                print("Debe ingresar un número mayor que 0.")
+
+        except ValueError:
+
+            print("El valor ingresado es inválido. No se aceptan letras ni valores numericos negativos.")
+
+    # Precio
+    while True:
+
+        try:
+
+            precio_unidad = int(input("Ingrese el precio por unidad: "))
+
+            if precio_unidad > 0:
+
+                break
+
+            else:
+
+                print("Debe ingresar un precio mayor que 0.")
+
+        except ValueError:
+
+            print("El valor ingresado es inválido. No se aceptan letras ni valores numericos negativos.")
+
+
+    # Estructura producto en el json
+    producto = {
+        "id": id_tipo,
+        "tipo": tipo_producto,
+        "capacidad": {1: "1L", 2: "5L", 3: "10L", 4: "20L"}[pintura_capacidad],
+        "cantidad": cantidad_unidades,
+        "precio_unidad": precio_unidad
+    }
+
+    # Funciones genericas
+    stock = cargar_datos()
+    stock.append(producto)
+    guardar_datos(stock)
     clear()
 
     print("===== PRODUCTO AGREGADO CORRECTAMENTE =====")
-    print(f"Pintura:{pintura}, capacidad:{capacidad}, Stock:{cantidad}, Precio ${precio}\n")
+    print(f"Pintura:{pintura_tipo}, Capacidad:{pintura_capacidad}, Unidades agregadas:{cantidad_unidades}, Precio por unidad ${precio_unidad}\n")
 
 
     while True:
