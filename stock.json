@@ -1,9 +1,16 @@
 [
     {
         "id": 2,
-        "tipo": "Brillante",
+        "tipo": "Satinada",
         "capacidad": "5L",
         "cantidad": 20,
         "precio_unidad": 20000
+    },
+    {
+        "id": 2,
+        "tipo": "Brillante",
+        "capacidad": "10L",
+        "cantidad": 23,
+        "precio_unidad": 32000
     }
 ]
