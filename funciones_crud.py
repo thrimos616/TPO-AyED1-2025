@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 import csv
 
-stock=[]
+
 
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
@@ -14,24 +14,35 @@ def cargar_datos():
     Carga los datos del stock desde un json
     Inicia la lista "stock" con los productos existentes
     """
-    global stock
     try:
+
         with open("stock.json", "rt", encoding="utf-8") as stock_json:
-                stock = json.load(stock_json)
+
+                return json.load(stock_json)
+
     except (FileNotFoundError,OSError,json.JSONDecodeError):
-        stock=[]
+
+        print("Archivo no encontrado.")
+
+        return []
 
 
-def guardar_datos():
+def guardar_datos(datos):
     """
     Guarda los datos del stock en un json
     """
-    global stock
+
     try:
-        with open("stock.json", "wt", encoding="utf-8") as archivo:
-            json.dump(stock, archivo, indent=2)
-    except (PermissionError,TypeError,OSError) as e:
-        print("Error",e)
+
+        with open("stock.json", "wt", encoding="utf-8") as f:
+
+            json.dump(datos, f, ensure_ascii=False, indent=4)
+
+    except (PermissionError,TypeError,OSError):
+
+        print("El archivo no pudo ser guardado.")
+
+
 
 def registrar_accion(accion, detalle):
     """
@@ -53,6 +64,8 @@ def agregar_producto():
     Se le solicita al usuario: tipo de pintura (satinada o brillante), capacidad de la lata (1lt, 5lts, 10lts o 20lts),
     la cantidad de ese producto y su precio por unidad
     """
+    stock=cargar_datos()
+
     tipo_pintura=["Satinada","Brillante"]
     print("=========== AGREGAR PRODUCTO ===========")
 
@@ -107,7 +120,7 @@ def agregar_producto():
     stock.append(producto)
 
 
-    guardar_datos()
+    stock=guardar_datos(stock)
     clear()
 
     print("===== PRODUCTO AGREGADO CORRECTAMENTE =====")
@@ -138,14 +151,177 @@ def modificar_producto():
     Modifica un producto existente en el stock
     Se le pide al usuario seleccionar entre, tipo de producto o precio de unidad
     """
-    pass
+    print("=========== MODIFICAR PRODUCTO ===========")
+
+    listar_productos()
+
+    stock = cargar_datos()
+
+    try:
+
+        id_producto = int(input("Ingrese el ID del producto a modificar: "))
+
+    except ValueError:
+
+        print("Solo se aceptan numeros")
+
+    producto = None
+
+    for x in stock:  # x seria el diccionario, osea cada producto por individual
+
+        if x["id"] == id_producto:
+            producto = x
+
+            break
+
+    if producto is None:
+        print("El ID no coincide con ningun producto.")
+
+    print("\n1: Tipo de producto")
+    print("2: Precio por unidad")
+    print("3: Capacidad\n")
+
+    try:
+
+        opcion = int(input("Ingrese el atributo a modificar: "))
+
+    except ValueError:
+
+        print("Debe ingresar un numero entre 1 y 3")
+
+    if opcion == 1:
+
+        print("1: Satinada | 2: Brillante")
+
+        tipo = int(input("Ingrese el nuevo tipo: "))
+
+        if tipo in (1, 2):
+            producto["tipo"] = "Satinada" if tipo == 1 else "Brillante"
+
+
+    elif opcion == 2:
+
+        nuevo_precio = int(input("Nuevo precio por unidad: "))
+
+        if nuevo_precio > 0:
+            producto["precio_unidad"] = nuevo_precio
+
+
+    elif opcion == 3:
+
+        print("1: 1L | 2: 5L | 3: 10L | 4: 20L")
+
+        nueva_capacidad = int(input("Ingrese la nueva capicidad: "))
+
+        match nueva_capacidad:
+
+            case 1:
+
+                producto["capacidad"] = "1L"
+
+            case 2:
+
+                producto["capacidad"] = "5L"
+
+            case 3:
+
+                producto["capacidad"] = "10L"
+
+            case 4:
+
+                producto["capacidad"] = "20L"
+
+            case _:  # Funciona como un else
+
+                print("Opcion invalida. Debe ingresar un valor entre 1 y 4.")
+
+                return modificar_producto()
+
+    else:
+
+        print("Opcion invalida.")
+
+    # Funciones genericas
+    guardar_datos(stock)
+    clear()
+
+    print("===== PRODUCTO MODIFICADO CORRECTAMENTE =====")
+
+    while True:
+        print("1. Volver al menú")
+        print("2. Modificar otro producto")
+        print("===========================================")
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            clear()
+            return
+        elif opcion == "2":
+            clear()
+            return modificar_producto()
+        else:
+            clear()
+            print("===== OPCIÓN INCORRECTA =====")
+
+
+
+
 
 def eliminar_producto():
     """
     Elimina un producto del stock
     Se le solicita al usuario el ID del producto a eliminar
     """
-    pass
+    print("=========== ELIMINAR PRODUCTO ===========")
+
+    listar_productos()
+    stock = cargar_datos()
+
+    try:
+
+        id_producto = int(input("Ingrese el ID del producto a eliminar: "))
+
+    except ValueError:
+
+        print("Solo se aceptan numeros")
+
+    producto = None
+
+    for x in stock:
+
+        if x["id"] == id_producto:
+            producto = x
+
+            break
+
+    if producto is None:
+        print("El ID no coincide con ningun producto.")
+
+    print(f"\nEl producto que estas por eliminar es: {producto["tipo"]}, {producto["capacidad"]}")
+
+    # Elimina el producto
+    stock.remove(producto)
+
+    guardar_datos(stock)
+    clear()
+
+    print("===== PRODUCTO ELIMINADO CORRECTAMENTE =====")
+
+    while True:
+        print("1. Volver al menú")
+        print("2. Eliminar otro producto")
+        print("===========================================")
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            clear()
+            return
+        elif opcion == "2":
+            clear()
+            return eliminar_producto()
+        else:
+            clear()
+            print("===== OPCIÓN INCORRECTA =====")
 
 
 def listar_productos():
@@ -170,7 +346,7 @@ def buscar_producto():
     Permite buscar productos en el stock por: tipo de pintura y/o capacidad
     Muestra los productos que coincidan con la busqueda
     """
-    global stock
+    stock = cargar_datos()
 
     if not stock:
         print("No hay productos cargados.")
@@ -342,7 +518,7 @@ def mostrar_stock_bajo():
     Muestra todos los productos cuyo stock sea menor a un valor mínimo
     Sirve para identificar productos que deben reponerse
     """
-    global stock
+    stock = cargar_datos()
 
     if not stock:
         print("No hay productos cargados.")
