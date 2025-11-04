@@ -15,6 +15,7 @@ def main():
             ("6", "Registrar ventas", registrar_venta),
             ("7", "Mostrar reportes", mostrar_reportes),
             ("8", "Exportar stock a csv", exportar_csv),
+            ("9", "Modificar umbrales", modificar_umbrales),
             ("0", "Salir", None)
         ]
 
