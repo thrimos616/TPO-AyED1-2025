@@ -5,7 +5,7 @@ import datetime
 import tabulate 
 import json
 
-# Funciones genericas
+# Funciones genericas 
 
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
@@ -18,9 +18,9 @@ def cargar_datos():
     
     try:
 
-        with open("stock.json", "r", encoding="utf-8") as stock_json:
+        with open("stock_data.json", "r", encoding="utf-8") as stockdata_json:
 
-            return json.load(stock_json)
+            return json.load(stockdata_json)
 
     except (FileNotFoundError, json.JSONDecodeError):
 
@@ -36,7 +36,7 @@ def guardar_datos(datos):
 
     try: 
 
-        with open("stock.json", "w", encoding="utf-8") as f:
+        with open("stock_data.json", "w", encoding="utf-8") as f:
 
             json.dump(datos, f, ensure_ascii=False, indent=4)
             # ensure_ascii=False: Permite el uso de tildes
@@ -76,41 +76,119 @@ def registrar_accion():
 def agregar_producto():
     """
     Agrega un nuevo producto al stock.
-    Se le solicita al usuario: tipo de pintura (satinada o brillante), capacidad de la lata (1lt, 5lts, 10lts o 20lts),
+    Se le solicita al usuario: tipo de pintura, capacidad de la lata (1lt, 5lts, 10lts o 20lts),
     la cantidad de ese producto y su precio por unidad.
     """
     print("=========== AGREGAR PRODUCTO ===========")
-
+    
+    stock_data = cargar_datos() # Carga todo el json (productos y umbrales)
+    stock = stock_data.get("productos", []) # Variable para acceder a los productos
+    umbrales = stock_data.get("umbrales", {}) # Variable para acceder a los umbrales
+    
     # Tipo de pintura
     while True:
 
         try:
-
-            print("1: Satinada | 2: Brillante\n")
+            print("1: Látex Interior")
+            print("2: Látex Exterior")
+            print("3: Esmalte Sintético Brillante")
+            print("4: Esmalte Sintético Satinado")
+            print("5: Barniz Marino")
+            print("6: Convertidor de Óxido")
+            print("7: Enduido Plástico Interior")
+            print("8: Impermeabilizante para Techos")
+            print("9: Antihumedad\n")
 
             pintura_tipo = int(input("Ingrese el tipo de pintura: "))
+            clear()
 
-            match tipo_input:
-                
+            match pintura_tipo:
+
                 case 1:
 
-                    tipo_producto = "Satinada"
+                    tipo_producto = "Látex Interior"
                     id_tipo = 1
                     break
 
                 case 2:
 
-                    tipo_producto = "Brillante"
+                    tipo_producto = "Látex Exterior"
                     id_tipo = 2
+                    break
+
+                case 3:
+
+                    tipo_producto = "Esmalte Sintético Brillante"
+                    id_tipo = 3
+                    break
+
+                case 4:
+
+                    tipo_producto = "Esmalte Sintético Satinado"
+                    id_tipo = 4
+                    break
+
+                case 5:
+
+                    tipo_producto = "Barniz Marino"
+                    id_tipo = 5
+                    break
+
+                case 6:
+
+                    tipo_producto = "Convertidor de Óxido"
+                    id_tipo = 6
+                    break
+
+                case 7:
+
+                    tipo_producto = "Enduido Plástico Interior"
+                    id_tipo = 7
+                    break
+
+                case 8:
+
+                    tipo_producto = "Impermeabilizante para Techos"
+                    id_tipo = 8
+                    break
+
+                case 9:
+
+                    tipo_producto = "Antihumedad"
+                    id_tipo = 9
                     break
 
                 case _:
 
-                    print("Opcion invslida. Ingrese 1 o 2.")
+                    print("Opcion invaida. Ingrese un número entre 1 y 9.")
 
         except ValueError:
 
             print("El valor ingresado es incorrecto. Solo se aceptan valores numericos.")
+
+
+    # Umbrales
+    if umbrales.get(tipo_producto) is None: # Si no existe el umbral del producto...
+
+        while True:
+
+            try:
+
+                valor = int(input(f"Ingrese el valor del umbral minimo de stock para {tipo_producto}: "))
+
+                if valor > 0:
+
+                    umbrales[tipo_producto] = valor
+                    break
+
+                else:
+
+                    print("Debe ingresar un numero mayor que 0")
+
+            except ValueError:
+
+                print("Valor invalido. Solo se aceptan numeros positivos.")
+
 
     # Capacidad de la lata
     while True:
@@ -139,10 +217,12 @@ def agregar_producto():
                     break
 
                 case 4:
+
                     capacidad = "20L"
                     break
 
                 case _:
+
                     print("Valor fuera de rango. Debe ingresar un valor entre 1 y 4")
 
         except ValueError:
@@ -157,16 +237,15 @@ def agregar_producto():
             cantidad_unidades = int(input("Ingrese la cantidad de unidades: "))
 
             if cantidad_unidades > 0:
-
                 break
 
             else:
 
-                print("Debe ingresar un número mayor que 0.")
+                print("Debe ingresar un numero mayor que 0.")
 
         except ValueError:
 
-            print("El valor ingresado es inválido. No se aceptan letras ni valores numericos negativos.")
+            print("El valor ingresado es invalido. No se aceptan letras ni valores numericos negativos.")
 
     # Precio
     while True:
@@ -176,39 +255,38 @@ def agregar_producto():
             precio_unidad = int(input("Ingrese el precio por unidad: "))
 
             if precio_unidad > 0:
-
                 break
-
+            
             else:
 
                 print("Debe ingresar un precio mayor que 0.")
 
         except ValueError:
 
-            print("El valor ingresado es inválido. No se aceptan letras ni valores numericos negativos.")
+            print("El valor ingresado es invalido. No se aceptan letras ni valores numericos negativos.")
 
-
-    nuevo_id_carga = id_carga =+ 1
+    # ID carga
+    nuevo_id_carga = len(stock) + 1 # sisi, ya se, es muy holgazan de mi parte, y mariano es posible que haga algun comentario xd
 
     # Estructura producto en el json
     producto = {
         "id": id_tipo,
-        "id_carga": nuevo_id_carga, 
+        "id_carga": nuevo_id_carga,
         "tipo": tipo_producto,
-        "capacidad": pintura_capacidad,
+        "capacidad": capacidad,
         "cantidad": cantidad_unidades,
         "precio_unidad": precio_unidad
     }
 
-    # Funciones genericas
-    stock = cargar_datos()
-    stock.append(producto)
-    guardar_datos(stock)
+    # Guarda todo
+    stock.append(producto) # La carga del producto
+    stock_data["productos"] = stock # El producto
+    stock_data["umbrales"] = umbrales # El umbral 
+    guardar_datos(stock_data)
     clear()
 
     print("===== PRODUCTO AGREGADO CORRECTAMENTE =====")
-    print(f"Pintura:{pintura_tipo}, Capacidad:{pintura_capacidad}, Unidades agregadas:{cantidad_unidades}, Precio por unidad ${precio_unidad}\n")
-
+    print(f"Pintura: {tipo_producto}, Capacidad: {capacidad}, Unidades agregadas: {cantidad_unidades}, Precio por unidad: ${precio_unidad}\n")
 
     while True:
         print("1. Volver al menú")
@@ -227,6 +305,7 @@ def agregar_producto():
             print("===== OPCIÓN INCORRECTA =====")
 
 
+
 def modificar_producto():
     """
     Modifica un producto existente en el stock
@@ -237,21 +316,23 @@ def modificar_producto():
     
     listar_productos()
 
-    stock = cargar_datos()
+    stock_data = cargar_datos() # Carga todo el json (productos y umbrales)
+    stock = stock_data.get("productos", []) # Variable para acceder a los productos
+    umbrales = stock_data.get("umbrales", {}) # Variable para acceder a los umbrales
 
     try:
 
-        id_producto = int(input("Ingrese el ID del producto a modificar: "))
-    
+        id_carga = int(input("Ingrese el ID de carga del producto a modificar: "))
+
     except ValueError:
 
-        print("Solo se aceptan numeros")
+        print("Solo se aceptan numeros.")
 
     producto = None
 
-    for x in stock: # x seria el diccionario, osea cada producto por individual
+    for x in stock: 
 
-        if x["id"] == id_producto:
+        if x["id_carga"] == id_carga:
 
             producto = x
 
@@ -259,81 +340,158 @@ def modificar_producto():
         
     if producto is None:
         
-        print("El ID no coincide con ningun producto.")
+        print("El ID de carga no coincide con ningun producto.")
     
-
     print("\n1: Tipo de producto")
     print("2: Precio por unidad")
     print("3: Capacidad\n")
 
     try:
-
         opcion = int(input("Ingrese el atributo a modificar: "))
-    
+
     except ValueError:
-        
+
         print("Debe ingresar un numero entre 1 y 3")
 
 
-    if opcion == 1:
+    match opcion:
 
-        print("1: Satinada | 2: Brillante")
+        # Cambira tipo
+        case 1:
+            print("\n1: Látex Interior")
+            print("2: Látex Exterior")
+            print("3: Esmalte Sintético Brillante")
+            print("4: Esmalte Sintético Satinado")
+            print("5: Barniz Marino")
+            print("6: Convertidor de Óxido")            
+            print("7: Enduido Plástico Interior")
+            print("8: Impermeabilizante para Techos")
+            print("9: Antihumedad\n")
 
-        tipo = int(input("Ingrese el nuevo tipo: "))
+            try:
 
-        if tipo in (1, 2):
+                tipo = int(input("Ingrese el nuevo tipo: "))
 
-            producto["tipo"] = "Satinada" if tipo == 1 else "Brillante"
+            except ValueError:
 
-
-    elif opcion == 2:
-
-        nuevo_precio = int(input("Nuevo precio por unidad: "))
-
-        if nuevo_precio > 0:
-
-            producto["precio_unidad"] = nuevo_precio
-
-
-    elif opcion == 3:
-
-        print("1: 1L | 2: 5L | 3: 10L | 4: 20L")
-
-        nueva_capacidad = int(input("Ingrese la nueva capicidad: "))
-
-        match nueva_capacidad:
-
-            case 1:
-
-                producto["capacidad"] = "1L"
-
-            case 2:
-
-                producto["capacidad"] = "5L"
-
-            case 3:
-
-                producto["capacidad"] = "10L"
-
-            case 4:
-
-                producto["capacidad"] = "20L"
-
-            case _: # Funciona como un else
-
-                print("Opcion invalida. Debe ingresar un valor entre 1 y 4.")
-
-                return modificar_producto()
-
-    else:
-
-        print("Opcion invalida.")
+                print("Debe ingresar un numero entre 1 y 9")
 
 
-    # Funciones genericas
-    guardar_datos(stock)
+            match tipo:
+
+                case 1:
+                    producto["tipo"] = "Látex Interior"
+                    producto["id"] = 1
+
+                case 2:
+
+                    producto["tipo"] = "Látex Exterior"
+                    producto["id"] = 2
+
+                case 3:
+
+                    producto["tipo"] = "Esmalte Sintético Brillante"
+                    producto["id"] = 3
+
+                case 4:
+
+                    producto["tipo"] = "Esmalte Sintético Satinado"
+                    producto["id"] = 4
+
+                case 5:
+
+                    producto["tipo"] = "Barniz Marino"
+                    producto["id"] = 5
+
+                case 6:
+
+                    producto["tipo"] = "Convertidor de Óxido"
+                    producto["id"] = 6
+
+                case 7:
+
+                    producto["tipo"] = "Enduido Plástico Interior"
+                    producto["id"] = 7
+
+                case 8:
+
+                    producto["tipo"] = "Impermeabilizante para Techos"
+                    producto["id"] = 8
+
+                case 9:
+
+                    producto["tipo"] = "Antihumedad"
+                    producto["id"] = 9
+
+                case _:
+
+                    print("Opciin invalida. Ingrese un numero entre 1 y 9")
+
+
+        # Cambiar precio
+        case 2:
+
+            try:
+
+                nuevo_precio = int(input("Nuevo precio por unidad: "))
+
+                if nuevo_precio > 0:
+                    producto["precio_unidad"] = nuevo_precio
+
+                else:
+
+                    print("Debe ingresar un numero mayor que 0")
+
+
+            except ValueError:
+
+                print("Solo se aceptan numeros.")
+
+
+        # CAmbiar capaciad
+        case 3:
+
+            print("1: 1L | 2: 5L | 3: 10L | 4: 20L")
+
+            try:
+
+                nueva_capacidad = int(input("Ingrese la nueva capacidad: "))
+
+            except ValueError:
+
+                print("Debe ingresar un numero entre 1 y 4")
+
+
+            match nueva_capacidad:
+
+                case 1:
+
+                    producto["capacidad"] = "1L"
+
+                case 2:
+
+                    producto["capacidad"] = "5L"
+
+                case 3:
+
+                    producto["capacidad"] = "10L"
+
+                case 4:
+
+                    producto["capacidad"] = "20L"
+
+                case _:
+                    print("Opcion invalida. Debe ingresar un valor entre 1 y 4")
+
+
+        case _:
+
+            print("Opcion invalida.")
+
+
+    # Guardar los cambios
+    guardar_datos(stock_data)
     clear()
-
     print("===== PRODUCTO MODIFICADO CORRECTAMENTE =====")
 
     while True:
@@ -342,15 +500,16 @@ def modificar_producto():
         print("===========================================")
         opcion = input("Seleccione una opción: ")
 
-        if opcion == "1":
-            clear()
-            return
-        elif opcion == "2":
-            clear()
-            return modificar_producto()
-        else:
-            clear()
-            print("===== OPCIÓN INCORRECTA =====")
+        match opcion:
+            case "1":
+                clear()
+                return
+            case "2":
+                clear()
+                return modificar_producto()
+            case _:
+                clear()
+                print("===== OPCIÓN INCORRECTA =====")
 
 def eliminar_producto():
     """
@@ -419,16 +578,14 @@ def listar_productos():
     Cada producto debe mostrar: ID, tipo de pintura, capacidad (lts), cantidad, precio de la unidad
     """
 
-    stock = cargar_datos()
+    stock_data = cargar_datos() # Carga todo el json (productos y umbrales)
+    stock = stock_data.get("productos", []) # Variable para acceder a los productos
 
     if not stock:
 
         print("===== No hay productos en stock =====")
 
-        return
-
-    print(tabulate.tabulate(stock, headers="keys", tablefmt="grid")) # Muestra el dic como una tabla
-
+    print(tabulate.tabulate(stock, headers="keys", tablefmt="grid", showindex=False)) # Muestra el dic como una tabla
 
 
 

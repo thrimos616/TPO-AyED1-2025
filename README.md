@@ -33,7 +33,7 @@ sistema_stock_tpo/
 ├── main.py # Menú principal y flujo general del sistema
 ├── crud.py # Funciones CRUD (gestión básica del stock)
 │
-├── stock.json # Base de datos del stock (productos)
+├── stock_data.json # Base de datos del stock (productos)
 └── historial.txt # Registro de acciones realizadas
 
 
