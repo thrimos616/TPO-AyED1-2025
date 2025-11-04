@@ -15,6 +15,7 @@ def cargar_datos():
     Carga los datos del stock desde un json
     Inicia la lista "stock" con los productos existentes
     """
+
     try:
 
         with open("stock.json", "rt", encoding="utf-8") as stock_json:
@@ -25,7 +26,20 @@ def cargar_datos():
 
         print("Archivo no encontrado.")
 
-        return []
+        return {
+        "productos": [],
+        "umbrales": {
+            "Látex Interior": 1,
+            "Látex Exterior": 1,
+            "Esmalte Sintético Brillante": 1,
+            "Esmalte Sintético Satinado": 1,
+            "Barniz Marino": 1,
+            "Convertidor de Óxido": 1,
+            "Enduido Plástico Interior": 1,
+            "Impermeabilizante para Techos": 1,
+            "Antihumedad": 1
+        }
+    }
 
 
 
@@ -297,8 +311,6 @@ def agregar_producto():
 
 def modificar_umbrales():
 
-    print("============= MODIFICAR UMBRALES DE STOCK =============")
-
     stock_data = cargar_datos()
     umbrales = stock_data.get("umbrales", {})
 
@@ -306,18 +318,20 @@ def modificar_umbrales():
                     "Barniz Marino", "Convertidor de Óxido", "Enduido Plástico Interior",
                     "Impermeabilizante para Techos", "Antihumedad"]
 
-    indice = 1
 
+    indice=1
+
+    print("============= MODIFICAR UMBRALES DE STOCK =============")
     print("Umbrales actuales:")
-    print("---------------------------------------------------")
+    print("=======================================================")
     for tipo, valor in umbrales.items():
         print(f"{indice}. {tipo}: {valor}")
         indice+=1
-    print("---------------------------------------------------\n")
+    print("=======================================================\n")
 
     while True:
 
-        tipo_modificar = input("Ingrese el número del tipo de pintura a modificar (ENTER para salir): ").strip()
+        tipo_modificar = input("Ingrese el número del tipo de pintura a modificar su umbral(ENTER para salir): ").strip()
 
         try:
             if not tipo_modificar:
@@ -332,16 +346,17 @@ def modificar_umbrales():
             indice=1
             print("============= MODIFICAR UMBRALES DE STOCK =============")
             print("Umbrales actuales:")
-            print("---------------------------------------------------")
+            print("=======================================================")
             for tipo, valor in umbrales.items():
                 print(f"{indice}. {tipo}: {valor}")
                 indice += 1
-            print("---------------------------------------------------")
+            print("=======================================================")
             print("Debe ingresar un número\n")
 
 
 
     clear()
+
 
     print("============= MODIFICAR UMBRALES DE STOCK =============")
     while True:
@@ -350,7 +365,7 @@ def modificar_umbrales():
             nuevo_valor = int(input(f"Ingrese el nuevo umbral mínimo para '{tipo_modificar}': "))
 
             while nuevo_valor <= 0:
-                print("Debe ingresar un número mayor que 0.")
+                print("Debe ingresar un número mayor que 0")
                 nuevo_valor = int(input(f"Ingrese el nuevo umbral mínimo para '{tipo_modificar}': "))
             break
 
@@ -717,6 +732,7 @@ def buscar_producto():
                 filtros.append(nombres_filtros[n])
             print(f"Filtros usados: {', '.join(filtros)}")
 
+
         criterio=input("Buscar por: ").strip()
         while criterio not in criterios:
             clear()
@@ -724,7 +740,7 @@ def buscar_producto():
             print(textos["texto1"])
             if criterios_usados:
                 print(f"Filtros usados: {", ".join(filtros)}")
-            print("Opción incorrecta\n")
+            print("Opción incorrecta")
             criterio = input("Buscar por: ").strip()
 
 
@@ -795,14 +811,14 @@ def buscar_producto():
 
         if resultados:
             print("================================ RESULTADOS ================================")
-            paso = 5
-            for i in range(0, len(resultados), paso):
-                pagina = resultados[i:i + paso]
+            mostrar = 5
+            for i in range(0, len(resultados), mostrar):
+                pagina = resultados[i:i + mostrar]
                 print(tabulate.tabulate(pagina, headers="keys", tablefmt="fancy_grid"))
                 print(" " *20 + f"Mostrando {i+1}-{i+len(pagina)} de {len(resultados)} Resultados\n")
 
                 if len(resultados)>1:
-                    seguir=input("Ingrese (1) para agregar otro filtro, (2) para continuar al menú, ENTER para continuar: ").strip().title()
+                    seguir=input("Ingrese (1) para agregar otro filtro, (2) para continuar al menú, ENTER para continuar: ").strip()
                     if seguir == "1":
                         clear()
                         break
@@ -813,8 +829,8 @@ def buscar_producto():
                     else:
                         clear()
 
-                        if i+paso>=len(resultados):
-                            salir=True
+                        if i+mostrar>=len(resultados):
+                            salir = True
                         else:
                             print("================================ RESULTADOS ================================")
 
