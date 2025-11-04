@@ -896,15 +896,15 @@ def mostrar_stock_bajo():
 
     registrar_accion("Consulta de stock bajo", f"{len(stock_bajo)} productos con stock bajo")
 
-    paso = 5
-    for i in range(0, len(stock_bajo), paso):
+    mostrar = 5
+    for i in range(0, len(stock_bajo), mostrar):
         print("========================= PRODUCTOS CON STOCK BAJO =========================")
-        pagina = stock_bajo[i:i + paso]
+        pagina = stock_bajo[i:i + mostrar]
         print(tabulate.tabulate(pagina, headers="keys", tablefmt="fancy_grid"))
         print(" " * 20 + f"Mostrando {i + 1}-{i + len(pagina)} de {len(stock_bajo)} Resultados\n")
 
-        if i+paso <= len(stock_bajo):
-            seguir = input("Ingrese (1) para volver al menú, ENTER para ver más resultados: ").strip().title()
+        if i+mostrar <= len(stock_bajo):
+            seguir = input("Ingrese (1) para volver al menú, ENTER para ver más resultados: ").strip()
 
             if seguir == "1":
                 clear()
