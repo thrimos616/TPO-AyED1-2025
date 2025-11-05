@@ -1,8 +1,8 @@
 # Funciones principales del sistema (Create, Read, Update, Delete)
 
 import os
-import datetime
-import tabulate 
+from datetime import datetime
+from tabulate import tabulate 
 import json
 
 # Funciones genericas 
@@ -48,30 +48,48 @@ def guardar_datos(datos):
 
 # Funciones propias del sistema
 
-def identificar_accion():
-    """
-    Identifica la accion realizada por el usuario para agregarla al historial
-    """
-
-    """
-   
-                ("1", "Agregar producto", agregar_producto),
-                ("2", "Modificar producto", modificar_producto),
-                ("3", "Eliminar producto", eliminar_producto),
-                ("6", "Registrar ventas", registrar_venta),
-                ("8", "Exportar stock a csv"
-    """
-
-    pass
-
-def registrar_accion():
+def registrar_accion(nombre_funcion) -> str:
     """
     Evalua que accion fue realizada en el sistema y la registra en un historial
     """
 
-    fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    
+    acciones = {
+
+        "agregar_producto": "Agregó un nuevo producto al stock",
+        "eliminar_carga_producto": "Eliminó una carga de producto",
+        "modificar_producto": "Modificó un producto existente",
+        "buscar_producto": "Buscó un producto en el stock",
+    }
+
+    descripcion = acciones.get(nombre_funcion, f"Ejecutó {nombre_funcion}")
+
+    linea_horario = f"[{fecha_hora}] {descripcion}\n"
+
+    ruta_archivo = os.path.join(os.path.dirname(__file__), "historial.txt")
+
+    try:
+        # Si no existe,el archivo, lo crea
+        if not os.path.exists(ruta_archivo):
+
+            with open(ruta_archivo, "w", encoding="utf-8") as archivo:
+                # Esto seria el encabezado
+                archivo.write("===== HISTORIAL DE ACCIONES =====\n\n") 
+
+        # Si existe, simplemetne lo escribe
+        with open(ruta_archivo, "a", encoding="utf-8") as archivo:
+
+            archivo.write(linea_horario)
+
+    except FileNotFoundError:
+
+        print("No se encontro o no se pudo crear el archivo.")
+
+    except OSError as e:
+
+        print(f"Error del sistema al registrar el historial: {e}")
+
 
 def agregar_producto():
     """
@@ -266,7 +284,14 @@ def agregar_producto():
             print("El valor ingresado es invalido. No se aceptan letras ni valores numericos negativos.")
 
     # ID carga
-    nuevo_id_carga = len(stock) + 1 # sisi, ya se, es muy holgazan de mi parte, y mariano es posible que haga algun comentario xd
+    if stock: # Si hay productos...
+
+        # Busca el maximo y le suma 1
+        nuevo_id_carga = max(x["id_carga"] for x in stock) + 1
+
+    else:
+
+        nuevo_id_carga = 1
 
     # Estructura producto en el json
     producto = {
@@ -278,10 +303,11 @@ def agregar_producto():
         "precio_unidad": precio_unidad
     }
 
-    # Guarda todo
+    # Guarda todo y lo registra en el historial
     stock.append(producto) # La carga del producto
     stock_data["productos"] = stock # El producto
     stock_data["umbrales"] = umbrales # El umbral 
+    registrar_accion("agregar_producto") # Historial
     guardar_datos(stock_data)
     clear()
 
@@ -489,8 +515,9 @@ def modificar_producto():
             print("Opcion invalida.")
 
 
-    # Guardar los cambios
+    # Guardar los cambios y historial
     guardar_datos(stock_data)
+    registrar_accion("modificar_producto")
     clear()
     print("===== PRODUCTO MODIFICADO CORRECTAMENTE =====")
 
@@ -511,30 +538,36 @@ def modificar_producto():
                 clear()
                 print("===== OPCIÓN INCORRECTA =====")
 
-def eliminar_producto():
+def eliminar_carga_producto():
     """
     Elimina un producto del stock
     Se le solicita al usuario el ID del producto a eliminar
     """
     print("=========== ELIMINAR PRODUCTO ===========")
 
+    stock_data = cargar_datos() # Carga todo el json (productos y umbrales)
+    stock = stock_data.get("productos", []) # Variable para acceder a los productos
+
+    if not stock:
+
+        print("===== No hay productos cargados =====")
+
     listar_productos()
-    stock = cargar_datos()
 
     try:
 
-        id_producto = int(input("Ingrese el ID del producto a modificar: "))
+        id_carga = int(input("\nIngrese el ID de carga del producto a eliminar: "))
     
     except ValueError:
 
-        print("Solo se aceptan numeros")
+        print("Solo se aceptan numeros.")
 
 
     producto = None
 
     for x in stock: 
 
-        if x["id"] == id_producto:
+        if x["id_carga"] == id_carga:
 
             producto = x
 
@@ -542,15 +575,31 @@ def eliminar_producto():
         
     if producto is None:
         
-        print("El ID no coincide con ningun producto.")
+        print("El ID de carga no coincide con ningun producto.")
+
+        return eliminar_carga_producto()
 
 
-    print(f"\nEl producto que estas por eliminar es: {producto["tipo"]}, {producto["capacidad"]}")
+    confirmasion = int(input(f"La carga del producto que desea eliminar es '{producto['tipo']}', ID: '{id_carga}', con '{producto["cantidad"]}' unidades, es esto correcto? (1: Si | 2: No): ")) 
 
-    # Elimina el producto
-    stock.remove(producto)
+    match confirmasion:
+
+        case 1:
     
-    guardar_datos(stock)
+            # Elimina el producto y solo actualiza la parte del producto en el json
+            stock.remove(producto)
+            stock_data["productos"] = stock
+        
+
+        case 2:
+
+            print("==== Eliminacion cancelada por el usuario ====")
+
+            return eliminar_carga_producto()
+    
+    # Guarda todo y historial
+    guardar_datos(stock_data)
+    registrar_accion("eliminar_carga_producto")
     clear()
 
     print("===== PRODUCTO ELIMINADO CORRECTAMENTE =====")
@@ -585,8 +634,7 @@ def listar_productos():
 
         print("===== No hay productos en stock =====")
 
-    print(tabulate.tabulate(stock, headers="keys", tablefmt="grid", showindex=False)) # Muestra el dic como una tabla
-
+    print(tabulate(stock, headers="keys", tablefmt="grid", showindex=False)) # Muestra el dic como una tabla
 
 
 def buscar_producto():
@@ -596,7 +644,7 @@ def buscar_producto():
     """
     print("=========== BUSCAR PRODUCTOS ===========")
     
-    print("1: Buscar por tipo | 2: Buscar por capacidad")
+    print("1: Buscar por tipo | 2: Buscar por capacidad | 3: Buscar por ambos")
 
     stock = cargar_datos()
     clear()

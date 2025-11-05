@@ -8,7 +8,7 @@ def main():
         opciones = [
             ("1", "Agregar producto", agregar_producto),
             ("2", "Modificar producto", modificar_producto),
-            ("3", "Eliminar producto", eliminar_producto),
+            ("3", "Eliminar producto", eliminar_carga_producto),
             ("4", "Buscar producto", buscar_producto),
             ("5", "Listar productos con bajo stock", mostrar_stock_bajo),
             ("6", "Registrar ventas", registrar_venta),

@@ -1,0 +1,6 @@
+===== HISTORIAL DE ACCIONES =====
+
+[2025-11-05 16:42:08] Agregó un nuevo producto al stock
+[2025-11-05 16:49:09] Agregó un nuevo producto al stock
+[2025-11-05 16:51:43] Modificó un producto existente
+[2025-11-05 16:52:13] Eliminó una carga de producto
