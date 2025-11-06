@@ -21,3 +21,17 @@
 [2025-11-06 03:17:34] Ejecutó eliminar_producto
 [2025-11-06 03:18:31] Ejecutó eliminar_producto
 [2025-11-06 03:31:37] Modificó un producto existente
+[2025-11-06 13:22:53] Buscó un producto en el stock
+[2025-11-06 13:24:07] Buscó un producto en el stock
+[2025-11-06 13:31:08] Buscó un producto en el stock
+[2025-11-06 13:33:27] Buscó un producto en el stock
+[2025-11-06 13:33:46] Buscó un producto en el stock
+[2025-11-06 13:34:03] Buscó un producto en el stock
+[2025-11-06 13:39:49] Buscó un producto en el stock
+[2025-11-06 13:39:59] Buscó un producto en el stock
+[2025-11-06 13:40:57] Buscó un producto en el stock
+[2025-11-06 13:42:23] Buscó un producto en el stock
+[2025-11-06 13:42:49] Buscó un producto en el stock
+[2025-11-06 13:43:21] Buscó un producto en el stock
+[2025-11-06 13:43:52] Buscó un producto en el stock
+[2025-11-06 13:55:37] Ejecutó modificar_stock

@@ -425,14 +425,16 @@ def eliminar_stock():
 
     listar_stock()
 
-    try:
+    while True:
 
-        id_stock = int(input("\nIngrese el ID de carga del producto a eliminar: "))
-    
-    except ValueError:
+        try:
 
-        print("Solo se aceptan numeros.")
+            id_stock = int(input("\nIngrese el ID de carga del producto a eliminar: "))
+        
+        except ValueError:
 
+            print("Solo se aceptan numeros.")
+            continue # Si hubo error, lo vuelve a pedir el id
 
     carga = None
 
@@ -616,13 +618,15 @@ def eliminar_producto():
 
     listar_productos()
 
-    # Elegir producto
-    try:
-        id_eliminar = int(input("\nIngrese el ID del producto a eliminar: "))
+    while True:
 
-    except ValueError:
+        # Elegir producto
+        try:
+            id_eliminar = int(input("\nIngrese el ID del producto a eliminar: "))
 
-        print("Valor invalido, solo se aceptan numeros.")
+        except ValueError:
+
+            print("Valor invalido, solo se aceptan numeros.")
 
 
     producto = None
@@ -693,13 +697,15 @@ def modificar_producto():
 
     listar_productos()
 
-    # Elegir producto
-    try:
-        id_producto = int(input("\nIngrese el ID del producto a modificar: "))
+    while True:
 
-    except ValueError:
+        # Elegir producto
+        try:
+            id_producto = int(input("\nIngrese el ID del producto a modificar: "))
 
-        print("Valor invalido, solo se aceptan numeros.")
+        except ValueError:
+
+            print("Valor invalido, solo se aceptan numeros.")
 
 
     producto = None
@@ -807,32 +813,204 @@ def listar_productos():
     print(tabulate(productos, headers="keys", tablefmt="grid", showindex=False)) # Muestra el csv como una tabla
 
 
-def buscar_producto():
+def buscar_producto() -> None:
     """
     Permite buscar productos en el stock por: tipo de pintura y/o capacidad
     Muestra los productos que coincidan con la busqueda
     """
-    print("=========== BUSCAR PRODUCTOS ===========")
-    
-    print("1: Buscar por tipo | 2: Buscar por capacidad | 3: Buscar por ambos")
+    # Carga los datos desde el archivo JSON de stock
+    stock_data = cargar_stock()
+    stock = stock_data.get("stock", [])
 
-    stock = cargar_datos()
-    clear()
+    # Carga todos los productos desde CSV
+    productos = cargar_productos()
 
-    opcion = int(input("Elija una opcion: "))
+    # Si no hay productos cargados, sale de la función
+    if not productos:
+        print("No hay productos cargados.")
+        return
 
+    # Lista de tipos de pintura disponibles desde CSV
+    tipo_pintura = list({p["nombre"] for p in productos})
 
+    # Opciones disponibles para filtrar (ID, tipo, capacidad, precio)
+    criterios=["1","2","3","4","0"]
+
+    # Guarda los filtros que ya se aplicaron
+    criterios_usados=[]
+
+    # Copia inicial de todos los productos
+    resultados = productos[:]
+
+    # Diccionario para mostrar los nombres en palabras de los filtros
+    nombres_filtros = {
+        "1": "ID",
+        "2": "Tipo de pintura",
+        "3": "Capacidad",
+        "4": "Precio"
+    }
+
+    # Textos reutilizables para mostrar
+    textos={"header":"=========== BUSCAR PRODUCTOS ===========",
+            "texto1":"¿Desea buscar por ID(Ingrese 1), pintura(2), por capacidad(3) o precio(4)? (0 Para salir)",
+            "menu":"1. Volver al menú\n2. Hacer otra búsqueda",
+            "separador":"==========================================="}
+
+    # Controla el bucle principal
+    salir=False
+
+    # Bucle principal del menú de búsqueda
+    while not salir:
+        print(textos["header"])
+        print(textos["texto1"])
+
+        # Si se aplicaron filtros, los muestra
+        if criterios_usados:
+            filtros=[]
+            for n in criterios_usados:
+                filtros.append(nombres_filtros[n])
+            print(f"Filtros usados: {', '.join(filtros)}")
+
+        # Solicita el criterio de búsqueda
+        criterio=input("Buscar por: ").strip()
+        # Validación de la opción ingresada
+        while criterio not in criterios:
+            clear()
+            print(textos["header"])
+            print(textos["texto1"])
+            if criterios_usados:
+                print(f"Filtros usados: {', '.join(filtros)}")
+            print("Opción incorrecta")
+            criterio = input("Buscar por: ").strip()
+
+        clear()
+
+        # Si elige 0, vuelve al menú principal
+        if criterio=="0":
+            return
+
+        print(textos["header"])
+
+        # Creamos una copia temporal de los resultados actuales
+        resultados_parciales = resultados[:]
+
+        # Si elige 1, Busca por id
+        if criterio == "1":
+            while True:
+                try:
+                    listar_productos()
+                    # Pide el id de producto y filtra resultados
+                    id_buscar = int(input("Ingrese el ID del producto: "))
+                    resultados = [p for p in resultados_parciales if int(p["id"]) == id_buscar]
+                    break
+                except ValueError:
+                    clear()
+                    print(textos["header"])
+                    print("El ID debe ser un número.")
+
+        # Si elige 2, Busca por tipo de pintura
+        elif criterio == "2":
+            while True:
+                # Muestra el listado de tipos de pintura
+                for i, x in enumerate(tipo_pintura, 1):
+                    print(f"{i}: {x}")
+                # Pide el tipo en número y valida si está en los valores aceptados
+                tipo_buscar = input("\nQue tipo de pintura es: ").strip()
+                if tipo_buscar not in map(str, range(1, len(tipo_pintura)+1)):
+                    clear()
+                    print(textos["header"])
+                    print("Opción incorrecta\n")
+                else:
+                    break
+
+            # Pasa el número ingresado al tipo expresado en palabras y filtra
+            tipo_buscar = tipo_pintura[int(tipo_buscar) - 1]
+            resultados = [p for p in resultados_parciales if p["nombre"] == tipo_buscar]
+
+        # Si elige 3, Busca por capacidad
+        elif criterio == "3":
+            capacidad_buscar = input("Ingrese la capacidad (1 | 4 | 5 | 10 | 20), espefique al final (kg o L): ").strip()
+            resultados = [p for p in resultados_parciales if p["capacidad"] == capacidad_buscar]
+
+        # Si elige 4, Busca por precio
+        elif criterio == "4":
+            while True:
+                try:
+                    precio_buscar = int(input("Ingrese el precio: "))
+                    resultados = [p for p in resultados_parciales if int(p["precio"]) == precio_buscar]
+                    break
+                except ValueError:
+                    clear()
+                    print(textos["header"])
+                    print("El precio debe ser un número")
+
+        # Guarda el filtro usado y lo elimina de los filtros disponibles
+        criterios_usados.append(criterio)
+        criterios.remove(criterio)
+
+        clear()
+
+        if resultados:
+            print("================================ RESULTADOS ================================")
+
+            # Cantidad de resultados que muestra cada página
+            mostrar = 5
+
+            # Muestra los resultados en páginas de 5 en 5
+            for i in range(0, len(resultados), mostrar):
+                pagina = resultados[i:i + mostrar]
+                print(tabulate(pagina, headers="keys", tablefmt="fancy_grid"))
+                print(" " *20 + f"Mostrando {i+1}-{i+len(pagina)} de {len(resultados)} Resultados\n")
+
+                if len(resultados) > 1:
+                    seguir = input("Ingrese (1) para agregar otro filtro, (2) para continuar al menú, ENTER para continuar: ").strip()
+
+                    if seguir == "1":
+                        # Vuelve al bucle principal para agregar otro filtro sin perder resultados actuales
+                        clear()
+                        break
+                    elif seguir == "2":
+                        clear()
+                        salir = True
+                        break
+                    else:
+                        clear()
+                        if i+mostrar>=len(resultados):
+                            salir = True
+                        else:
+                            print("================================ RESULTADOS ================================")
+                elif len(resultados) == 1:
+                    input("ENTER para continuar: ")
+                    clear()
+                    salir = True
+        elif not criterios or not resultados:
+            print(textos["separador"])
+            print("No se encontraron productos que coincidan con la búsqueda.")
+            break
+
+    # Registra la acción en el historial
+    registrar_accion("buscar_producto")
+
+    # Menú final
+    print(textos["header"])
     while True:
-        print("1. Volver al menú")
-        print("===========================================")
+        print(textos["menu"])
+        print(textos["separador"])
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
             clear()
             return
+        elif opcion == "2":
+            clear()
+            return buscar_producto()
         else:
             clear()
-            print("===== OPCIÓN INCORRECTA =====")
+            print("=========== OPCIÓN INCORRECTA ===========")
+
+
+
+
 
 def registrar_venta():
     """
@@ -863,26 +1041,62 @@ def registrar_venta():
             print("===== OPCIÓN INCORRECTA =====")
 
 
-def mostrar_stock_bajo():
+def mostrar_stock_bajo() -> None:
     """
     Muestra todos los productos cuyo stock sea menor a un valor mínimo
     Sirve para identificar productos que deben reponerse
     """
-    print("=========== STOCK BAJO ===========")
-    print("No hay productos con stock bajo por el momento.")
-    print("===========================================")
+    # Carga los datos desde el archivo JSON
+    stock_data = cargar_stock()
 
-    while True:
-        print("1. Volver al menú")
-        print("===========================================")
-        opcion = input("Seleccione una opción: ")
+    # Si cargar_stock devuelve lista vacía o no válida
+    if not stock_data:
+        print("No hay datos de stock cargados.")
+        return
 
-        if opcion == "1":
+    # Obtiene la lista de productos y los umbrales de stock mínimo
+    stock = stock_data.get("stock", [])
+    umbrales = stock_data.get("umbrales", {})
+
+    # Si no hay productos cargados, sale de la función
+    if not stock:
+        print("No hay productos cargados.")
+        return
+
+    # Filtra los productos que su stock actual sea menor o igual al umbral definido por tipo
+    stock_bajo = [p for p in stock if p["tipo"] in umbrales and int(p["cantidad"]) <= int(umbrales[p["tipo"]])]
+
+    # Si no hay productos con stock bajo
+    if not stock_bajo:
+        print("No hay productos con stock bajo.")
+        return
+
+    # Cantidad de resultados que muestra cada página
+    mostrar = 5
+
+    # Muestra los resultados en páginas de 5 en 5
+    for i in range(0, len(stock_bajo), mostrar):
+        print("========================= PRODUCTOS CON STOCK BAJO =========================")
+        pagina = stock_bajo[i:i + mostrar]
+        print(tabulate(pagina, headers="keys", tablefmt="fancy_grid"))
+        print(" " * 20 + f"Mostrando {i + 1}-{i + len(pagina)} de {len(stock_bajo)} Resultados\n")
+
+        # Si hay más productos para mostrar
+        if i + mostrar <= len(stock_bajo):
+            seguir = input("Ingrese (1) para volver al menú, ENTER para ver más resultados: ").strip()
+
+            # Si elige 1, vuelve al menú principal, si no, continúa
+            if seguir == "1":
+                clear()
+                return
+            else:
+                clear()
+        # Si llegó al final de los resultados, espera ENTER y vuelve al menú
+        else:
+            input("ENTER para ir al menú: ")
             clear()
             return
-        else:
-            clear()
-            print("===== OPCIÓN INCORRECTA =====")
+
 
 
 def mostrar_reportes():

@@ -16,10 +16,13 @@ Todo el funcionamiento se realiza mediante una **interfaz por consola**, con una
 - **Listar productos:** muestra todos los productos del stock en formato tabular.
 - **Buscar producto:** permite buscar productos por tipo o capacidad.
 - **Modificar producto:** actualiza cantidad o precio de productos existentes.
-- **Eliminar producto:** elimina productos del stock.
+- **Eliminar producto:** elimina productos cargados en el csv.
+- **Agregar stock:** agrega cargas de productos al stock guardadas en el JSON.
+- **Eliminar stock:** elimina cargas de productos al stock guardadas en el JSON.
+- **Modificar stock:** modifica los atributos (tipo, capacidad o unidades) de una carga de stock.
 
 ### 🔹 Funciones adicionales
-- **Registrar venta:** descuenta del stock los productos vendidos y guarda la operación.
+- **Registrar venta:** descuenta del stock los productos vendidos y guarda la operación en un csv.
 - **Mostrar stock bajo:** muestra productos con menos de una cantidad mínima definida (por ejemplo, 5 unidades).
 - **Mostrar reportes:** genera estadísticas del stock (valor total, productos más o menos disponibles, etc.).
 - **Exportar a CSV:** crea un archivo con todo el stock actual, compatible con Excel o Google Sheets.
@@ -30,10 +33,9 @@ Todo el funcionamiento se realiza mediante una **interfaz por consola**, con una
 
 sistema_stock_tpo/
 │
-├── main.py # Menú principal y flujo general del sistema
-├── crud.py # Funciones CRUD (gestión básica del stock)
+├── main.py                # Menú principal y flujo general del sistema
+├── funciones_crud.py      # Funciones CRUD y auxiliares
 │
-├── stock_data.json # Base de datos del stock (productos)
-└── historial.txt # Registro de acciones realizadas
-
-
+├── productos.csv          # Catálogo de productos (id, tipo, capacidad, precio_unidad)
+├── stock_data.json        # Datos del stock y umbrales de reposición
+└── historial.txt          # Registro de operaciones (ventas, altas, bajas, etc.)
