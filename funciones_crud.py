@@ -4,7 +4,6 @@ import os
 from datetime import datetime
 from tabulate import tabulate 
 import json
-
 # Funciones genericas 
 
 def clear():
@@ -794,18 +793,26 @@ def modificar_producto():
 
 def listar_productos():
     """
-    Muestra por pantalla todos los productos del stock en forma de tabla
-    Cada producto debe mostrar: ID, tipo de pintura, capacidad (lts), cantidad, precio de la unidad
+    Muestra por pantalla todos los productos en stock (desde stock_data.json)
+    y devuelve una lista con ellos.
     """
+    try:
+        with open("stock_data.json", "r", encoding="utf-8") as archivo:
+            data = json.load(archivo)
+            stock = data.get("stock", [])
+    except (FileNotFoundError, json.JSONDecodeError):
+        print("Error al leer el archivo de stock.")
+        return []
 
-    productos = cargar_productos()  # Variable para acceder a los productos
+    if not stock:
+        print("===== No hay productos en stock =====")
+        return []
 
-    if not productos:
-
-        print("===== No hay productos cargados =====")
-
-    print(tabulate(productos, headers="keys", tablefmt="grid", showindex=False)) # Muestra el csv como una tabla
-
+    print("\n======= LISTA DE PRODUCTOS DISPONIBLES =======")
+    for p in stock:
+        print(f"ID: {p['id']} | Tipo: {p['tipo']} | Capacidad: {p['capacidad']} | Cantidad: {p['cantidad']}")
+    print("==============================================\n")
+    return stock
 
 def buscar_producto():
     """
@@ -834,33 +841,143 @@ def buscar_producto():
             clear()
             print("===== OPCIÓN INCORRECTA =====")
 
+def obtener_datos_producto(id_producto):
+    """Busca los datos del producto (nombre, categoría, precio) en productos.csv."""
+    try:
+        with open("productos.csv", newline="", encoding="utf-8") as archivo:
+            lector = csv.DictReader(archivo)
+            for fila in lector:
+                if str(fila["id_producto"]).strip() == str(id_producto):
+                    return {
+                        "nombre": fila.get("tipo", fila.get("nombre", "Desconocido")),
+                        "categoria": fila.get("categoria", "Sin categoría"),
+                        "precio_unitario": float(fila.get("precio_unidad", 0))
+                    }
+    except FileNotFoundError:
+        print("Error: no se encontró productos.csv")
+    except Exception as e:
+        print(f"Error al leer el CSV de productos: {e}")
+    return None
+
+
 def registrar_venta():
-    """
-    Registra una venta de un producto solicitando: ID del producto, cantidad vendida
-    Se descuenta del stock y se registra en el historial
-    """
+    """Registra una venta completa, actualiza el stock y guarda en ventas.csv."""
     print("=========== REGISTRAR VENTA ===========")
-    listar_productos()
-    input("ID del producto vendido: ")
-    input("Cantidad vendida: ")
+    stock = listar_productos()
+    ventas = []
+    if not stock:
+        print("No hay productos disponibles para vender.")
+        return
+
+    # --- Solicitar datos ---
+    try:
+        id_producto = int(input("ID del producto vendido: ").strip())
+        cantidad_vendida = int(input("Cantidad vendida: ").strip())
+        if cantidad_vendida <= 0:
+            clear()
+            print("===== ERROR: La cantidad debe ser mayor que 0 =====")
+            return
+    except ValueError:
+        clear()
+        print("===== ERROR: Ingrese valores numéricos válidos =====")
+        return
+
+    # --- Buscar producto en el stock JSON ---
+    producto = next((p for p in stock if int(p["id"]) == id_producto), None)
+    if not producto:
+        clear()
+        print("===== ERROR: Producto no encontrado =====")
+        return
+
+    if cantidad_vendida > int(producto["cantidad"]):
+        clear()
+        print("===== ERROR: Stock insuficiente =====")
+        return
+
+    # --- Obtener precio y categoría desde productos.csv ---
+    datos_producto = obtener_datos_producto(id_producto)
+    if datos_producto is None:
+        clear()
+        print("===== ERROR: No se encontró el producto en productos.csv =====")
+        return
+
+    nombre_producto = datos_producto["nombre"]
+    categoria = datos_producto["categoria"]
+    precio_unitario = datos_producto["precio_unitario"]
+    total_venta = round(precio_unitario * cantidad_vendida, 2)
+
+    metodo_pago = input("Método de pago (Efectivo/Tarjeta/Transferencia): ").strip().capitalize()
+    if metodo_pago == "":
+        metodo_pago = "No especificado"
+
+    # --- Actualizar stock ---
+    producto["cantidad"] = int(producto["cantidad"]) - cantidad_vendida
+
+    # --- Guardar stock actualizado ---
+    try:
+        with open("stock_data.json", "r+", encoding="utf-8") as archivo:
+            data = json.load(archivo)
+            for p in data["stock"]:
+                if int(p["id"]) == id_producto:
+                    p["cantidad"] = producto["cantidad"]
+            archivo.seek(0)
+            json.dump(data, archivo, indent=4, ensure_ascii=False)
+            archivo.truncate()
+    except Exception as e:
+        print(f"Error al guardar el stock actualizado: {e}")
+        return
+
+    # --- Crear registro de venta ---
+    id_venta = len(ventas) + 1
+    fecha_y_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    venta = {
+        "id_venta": id_venta,
+        "fecha_y_hora": fecha_y_hora,
+        "id_producto": id_producto,
+        "nombre_producto": nombre_producto,
+        "categoria": categoria,
+        "cantidad": cantidad_vendida,
+        "precio_unitario": precio_unitario,
+        "total": total_venta,
+        "metodo_pago": metodo_pago
+    }
+    ventas.append(venta)
+
+    # --- Guardar o crear ventas.csv ---
+    try:
+        nuevo = not os.path.exists("ventas.csv")
+        with open("ventas.csv", "a", encoding="utf-8", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=venta.keys())
+            if nuevo:
+                writer.writeheader()
+            writer.writerow(venta)
+    except Exception as e:
+        print(f"Error al guardar la venta: {e}")
+        return
+
+    # --- Confirmación ---
     clear()
     print("===== VENTA REGISTRADA CORRECTAMENTE =====")
+    print(f"Producto: {nombre_producto} | Cantidad: {cantidad_vendida} | Precio unitario: ${precio_unitario:,.2f}")
+    print(f"Total: ${total_venta:,.2f} | Método de pago: {metodo_pago}")
+    print("===========================================")
 
-    while True:
-        print("1. Volver al menú")
-        print("2. Registrar otra venta")
-        print("===========================================")
-        opcion = input("Seleccione una opción: ")
 
-        if opcion == "1":
-            clear()
-            return
-        elif opcion == "2":
-            clear()
-            return registrar_venta()
-        else:
-            clear()
-            print("===== OPCIÓN INCORRECTA =====")
+    print("\n1. Volver al menú")
+    print("2. Registrar otra venta")
+    print("===========================================")
+    opcion = input("Seleccione una opción: ")
+
+    if opcion == "1":
+        clear()
+        return
+    elif opcion == "2":
+        clear()
+
+    else:
+        clear()
+        print("===== OPCIÓN INCORRECTA =====")
 
 
 def mostrar_stock_bajo():
@@ -887,14 +1004,52 @@ def mostrar_stock_bajo():
 
 def mostrar_reportes():
     """
-    Muestra los reportes de ventas por fecha
+    Muestra reportes de ventas agrupadas por fecha desde ventas.csv.
     """
-    print("=========== REPORTES ===========")
+    print("=========== REPORTES DE VENTAS ===========")
 
-    print("fecha: 2025-19-10, producto: Satinada 10lts, cantidad: 2, precio unitario: 10000")
+    if not os.path.exists("ventas.csv"):
+        print("No hay registros de ventas disponibles.")
+        print("===========================================")
+        input("Presione Enter para volver al menú...")
+        clear()
+        return
 
-    print("===========================================")
+    ventas_por_fecha = defaultdict(list)
+    try:
+        with open("ventas.csv", newline="", encoding="utf-8") as archivo:
+            lector = csv.DictReader(archivo)
+            for fila in lector:
+                if not fila.get("fecha_y_hora"):
+                    continue
+                try:
+                    fecha = datetime.strptime(fila["fecha_y_hora"], "%Y-%m-%d %H:%M:%S").date()
+                except ValueError:
+                    fecha = fila["fecha_y_hora"].split(" ")[0]
+                ventas_por_fecha[str(fecha)].append(fila)
+    except Exception as e:
+        print(f"Error al leer el archivo de ventas: {e}")
+        return
 
+    if not ventas_por_fecha:
+        print("No hay ventas registradas.")
+        print("===========================================")
+        input("Presione Enter para volver al menú...")
+        clear()
+        return
+
+    for fecha, ventas in sorted(ventas_por_fecha.items()):
+        print(f"\nFecha: {fecha}")
+        for v in ventas:
+            nombre = v.get("nombre_producto", "Desconocido")
+            cantidad = v.get("cantidad", "0")
+            precio_unit = v.get("precio_unitario", "0")
+            total = v.get("total", "0")
+            metodo = v.get("metodo_pago", "N/A")
+            print(f"Producto: {nombre} | Cantidad: {cantidad} | Precio unitario: ${precio_unit} | Total: ${total} | Pago: {metodo}")
+        print("-------------------------------------------")
+
+    print("\n===========================================")
     while True:
         print("1. Volver al menú")
         print("===========================================")
@@ -910,20 +1065,45 @@ def mostrar_reportes():
 
 def exportar_csv():
     """
-    Exporta todos los datos del stock a un archivo CSV
+    Exporta todos los datos del stock desde stock_data.json a un archivo CSV.
+    Compatible con estructura tipo 2: { "stock": [ ... ], "umbrales": { ... } }
     """
     print("=========== EXPORTAR CSV ===========")
-    print("Archivo exportado correctamente como archivo.csv")
+
+    try:
+        with open("stock_data.json", "r", encoding="utf-8") as archivo:
+            data = json.load(archivo)
+            stock = data.get("stock", [])
+    except (FileNotFoundError, json.JSONDecodeError):
+        print("Error: no se pudo leer stock_data.json")
+        print("===========================================")
+        input("Presione Enter para volver al menú...")
+        clear()
+        return
+
+    if not stock:
+        print("No hay datos de stock para exportar.")
+        print("===========================================")
+        input("Presione Enter para volver al menú...")
+        clear()
+        return
+
+    nombre_archivo = f"stock_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+
+    try:
+        with open(nombre_archivo, "w", newline="", encoding="utf-8") as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=stock[0].keys())
+            writer.writeheader()
+            writer.writerows(stock)
+    except Exception as e:
+        print(f"Error al exportar el archivo CSV: {e}")
+        print("===========================================")
+        input("Presione Enter para volver al menú...")
+        clear()
+        return
+
+    print(f"Archivo exportado correctamente como '{nombre_archivo}'")
     print("===========================================")
 
-    while True:
-        print("1. Volver al menú")
-        print("===========================================")
-        opcion = input("Seleccione una opción: ")
-
-        if opcion == "1":
-            clear()
-            return
-        else:
-            clear()
-            print("===== OPCIÓN INCORRECTA =====")
+    input("Presione Enter para volver al menú...")
+    clear()

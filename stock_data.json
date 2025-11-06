@@ -17,6 +17,30 @@
             "tipo": "Esmalte Sintético Satinado",
             "capacidad": "1L",
             "cantidad": 20
+        },
+        {
+            "id": 4,
+            "tipo": "Antihumedad",
+            "capacidad": "1L",
+            "cantidad": 30
+        },
+        {
+            "id": 5,
+            "tipo": "Impermeabilizante para Techos",
+            "capacidad": "4L",
+            "cantidad": 20
+        },
+        {
+            "id": 6,
+            "tipo": "Antihumedad",
+            "capacidad": "4L",
+            "cantidad": 20
+        },
+        {
+            "id": 7,
+            "tipo": "Látex Interior",
+            "capacidad": "10L",
+            "cantidad": 3
         }
     ],
     "umbrales": {
@@ -27,7 +51,7 @@
         "Barniz Marino": 3,
         "Convertidor de Óxido": null,
         "Enduido Plástico Interior": 10,
-        "Impermeabilizante para Techos": null,
+        "Impermeabilizante para Techos": 3,
         "Antihumedad": 5
     }
 }
