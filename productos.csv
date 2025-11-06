@@ -1,0 +1,23 @@
+id,nombre,capacidad,categoria,precio
+1,Látex Interior,1L,Pintura,4000
+2,Látex Interior,4L,Pintura,13000
+3,Látex Interior,10L,Pintura,26000
+4,Látex Interior,20L,Pintura,47000
+5,Látex Exterior,1L,Pintura,4300
+6,Látex Exterior,4L,Pintura,14000
+7,Látex Exterior,10L,Pintura,28000
+8,Látex Exterior,20L,Pintura,50000
+9,Esmalte Sintético Brillante,1L,Pintura,7500
+10,Esmalte Sintético Brillante,4L,Pintura,25000
+11,Esmalte Sintético Satinado,1L,Pintura,7500
+12,Esmalte Sintético Satinado,4L,Pintura,25000
+13,Barniz Marino,1L,Protector,8200
+14,Barniz Marino,4L,Protector,27000
+15,Convertidor de Óxido,1L,Preparación,5200
+16,Convertidor de Óxido,4L,Preparación,17500
+17,Enduido Plástico Interior,1kg,Preparación,3200
+18,Enduido Plástico Interior,5kg,Preparación,12500
+19,Impermeabilizante para Techos,4L,Impermeabilizante,21000
+20,Impermeabilizante para Techos,10L,Impermeabilizante,42000
+21,Antihumedad,1L,Preparación,5600
+22,Antihumedad,4L,Preparación,19000

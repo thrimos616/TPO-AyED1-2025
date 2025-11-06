@@ -1,78 +1,32 @@
 {
-    "productos": [
+    "stock": [
         {
             "id": 1,
-            "id_carga": 2,
             "tipo": "Látex Interior",
             "capacidad": "5L",
-            "cantidad": 7,
-            "precio_unidad": 30000
-        },
-        {
-            "id": 4,
-            "id_carga": 5,
-            "tipo": "Esmalte Sintético Satinado",
-            "capacidad": "5L",
-            "cantidad": 5,
-            "precio_unidad": 6000
-        },
-        {
-            "id": 5,
-            "id_carga": 6,
-            "tipo": "Barniz Marino",
-            "capacidad": "10L",
-            "cantidad": 2,
-            "precio_unidad": 10000
-        },
-        {
-            "id": 9,
-            "id_carga": 10,
-            "tipo": "Antihumedad",
-            "capacidad": "1L",
-            "cantidad": 12,
-            "precio_unidad": 1300
+            "cantidad": 7
         },
         {
             "id": 2,
-            "id_carga": 6,
-            "tipo": "Látex Exterior",
-            "capacidad": "5L",
-            "cantidad": 32,
-            "precio_unidad": 14500
-        },
-        {
-            "id": 3,
-            "id_carga": 7,
-            "tipo": "Esmalte Sintético Brillante",
-            "capacidad": "10L",
-            "cantidad": 15,
-            "precio_unidad": 24600
-        },
-        {
-            "id": 3,
-            "id_carga": 8,
-            "tipo": "Esmalte Sintético Brillante",
+            "tipo": "Antihumedad",
             "capacidad": "1L",
-            "cantidad": 20,
-            "precio_unidad": 7800
+            "cantidad": 10
         },
         {
-            "id": 1,
-            "id_carga": 9,
-            "tipo": "Látex Interior",
-            "capacidad": "10L",
-            "cantidad": 12,
-            "precio_unidad": 12900
+            "id": 3,
+            "tipo": "Esmalte Sintético Satinado",
+            "capacidad": "1L",
+            "cantidad": 20
         }
     ],
     "umbrales": {
         "Látex Interior": 5,
         "Látex Exterior": 30,
         "Esmalte Sintético Brillante": 15,
-        "Esmalte Sintético Satinado": null,
+        "Esmalte Sintético Satinado": 30,
         "Barniz Marino": 3,
         "Convertidor de Óxido": null,
-        "Enduido Plástico Interior": null,
+        "Enduido Plástico Interior": 10,
         "Impermeabilizante para Techos": null,
         "Antihumedad": 5
     }
