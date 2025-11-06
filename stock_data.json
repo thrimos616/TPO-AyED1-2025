@@ -1,0 +1,33 @@
+{
+    "stock": [
+        {
+            "id": 1,
+            "tipo": "Látex Interior",
+            "capacidad": "5L",
+            "cantidad": 7
+        },
+        {
+            "id": 2,
+            "tipo": "Antihumedad",
+            "capacidad": "1L",
+            "cantidad": 24
+        },
+        {
+            "id": 3,
+            "tipo": "Esmalte Sintético Satinado",
+            "capacidad": "1L",
+            "cantidad": 20
+        }
+    ],
+    "umbrales": {
+        "Látex Interior": 5,
+        "Látex Exterior": 30,
+        "Esmalte Sintético Brillante": 15,
+        "Esmalte Sintético Satinado": 30,
+        "Barniz Marino": 3,
+        "Convertidor de Óxido": null,
+        "Enduido Plástico Interior": 10,
+        "Impermeabilizante para Techos": null,
+        "Antihumedad": 5
+    }
+}
