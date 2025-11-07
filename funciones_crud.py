@@ -142,6 +142,8 @@ def registrar_accion(nombre_funcion) -> str:
         "eliminar_carga_producto": "Eliminó una carga de producto",
         "modificar_producto": "Modificó un producto existente",
         "buscar_producto": "Buscó un producto en el stock",
+        "modificar_umbrales": "Modificó el valor de un umbral",
+        "mostrar_stock_bajo": "Mostró los productos con stock bajo"
     }
 
     descripcion = acciones.get(nombre_funcion, f"Ejecutó {nombre_funcion}")
@@ -1052,6 +1054,8 @@ def modificar_umbrales():
     stock_data["umbrales"] = umbrales
     guardar_stock(stock_data)
 
+    registrar_accion("modificar_umbrales")
+
     clear()
     print("=========== UMBRAL MODIFICADO CORRECTAMENTE ===========")
     print(f"{tipo_modificar}: Nuevo umbral → {nuevo_valor}")
@@ -1380,6 +1384,7 @@ def mostrar_stock_bajo() -> None:
 
     # Cantidad de resultados que muestra cada página
     mostrar = 5
+    registrar_accion("mostrar_stock_bajo")
 
     # Muestra los resultados en páginas de 5 en 5
     for i in range(0, len(stock_bajo), mostrar):
