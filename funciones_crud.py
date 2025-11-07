@@ -1145,7 +1145,7 @@ def buscar_producto() -> None:
 
     # Textos reutilizables para mostrar
     textos={"header":"=========== BUSCAR PRODUCTOS ===========",
-            "texto1":"Desea buscar por:\n1: ID\n2: Pintura\n3: Capacidad\n4: Precio\n5: Categoría \n0: Salir",
+            "texto1":"Desea buscar por:\n1: ID\n2: Nombre\n3: Capacidad\n4: Precio\n5: Categoría \n0: Salir",
             "menu":"1. Volver al menú\n2. Hacer otra búsqueda",
             "separador":"==========================================="}
 
@@ -1201,7 +1201,7 @@ def buscar_producto() -> None:
 
         # Si elige 2, Busca por nombre
         elif criterio == "2":
-            nombre = input("\nIngrese el nombre de la pintura: ").strip()
+            nombre = input("\nIngrese el nombre de la pintura: ").strip().title()
             resultados = [p for p in resultados if p["nombre"] == nombre]
 
 
