@@ -1,5 +1,3 @@
-AVISO: Este readme esta claramente "GPTEADO", lo revise pero es posible que haya pasado algo por alto, gracias por leer el aviso 
-
 # Sistema de Stock para Pinturería
 
 ##  Descripción del proyecto
@@ -26,17 +24,3 @@ Todo el funcionamiento se realiza mediante una **interfaz por consola**, con una
 - **Mostrar stock bajo:** muestra productos con menos de una cantidad mínima definida (por ejemplo, 5 unidades).
 - **Mostrar ventas:** muestra en una tabla todas las ventas y su fecha de realizacion.
 - **Exportar a CSV:** crea un archivo con todo el stock actual, compatible con Excel o Google Sheets.
-
----
-
-## Estructura del proyecto
-
-sistema_stock_tpo/
-│
-├── main.py                # Menú principal y flujo general del sistema
-├── funciones_crud.py      # Funciones CRUD y auxiliares
-│
-├── productos.csv          # Catálogo de productos (id, tipo, capacidad, precio_unidad)
-├── stock_data.json        # Datos del stock y umbrales de reposición
-├── ventas.csv             # Datos de las ventas realizadas 
-└── historial.txt          # Registro de operaciones (ventas, altas, bajas, etc.)
