@@ -1047,6 +1047,9 @@ def buscar_producto() -> None:
     # Lista de tipos de pintura disponibles
     tipo_pintura = ["Látex Interior", "Látex Exterior", "Esmalte Sintético Brillante", "Esmalte Sintético Satinado", "Barniz Marino", "Convertidor de Óxido", "Enduido Plástico Interior", "Impermeabilizante para Techos", "Antihumedad"]
 
+    #Lista de las categorías
+    categorias = ["Pintura", "Protector", "Preparación", "Impermeabilizante"]
+
     # Opciones disponibles para filtrar (ID, tipo, capacidad, precio)
     criterios=["1","2","3","4","5","0"]
 
@@ -1067,7 +1070,7 @@ def buscar_producto() -> None:
 
     # Textos reutilizables para mostrar
     textos={"header":"=========== BUSCAR PRODUCTOS ===========",
-            "texto1":"¿Desea buscar por ID(Ingrese 1), pintura(2), por capacidad(3) o precio(4)? (0 Para salir)",
+            "texto1":"Desea buscar por:\n1: ID\n2: Pintura\n3: Capacidad\n4: Precio\n5: Categoría \n0: Salir",
             "menu":"1. Volver al menú\n2. Hacer otra búsqueda",
             "separador":"==========================================="}
 
@@ -1168,7 +1171,22 @@ def buscar_producto() -> None:
                     print("El precio debe ser un número")
 
         #Si elige 5, busca por categoría
-        #TERMINAR
+        elif criterio == "5":
+            while True:
+                # Muestra el listado de categorías
+                for i, x in enumerate(categorias):
+                    print(f"{i + 1}: {x}")
+                # Pide el tipo en número y válida si esta en los valores aceptados
+                categoria = input("\nQue categoría es: ").strip()
+                if categoria not in ("1", "2", "3", "4"):
+                    clear()
+                    print("=========== AGREGAR PRODUCTO ===========")
+                    print("Opción incorrecta\n")
+                else:
+                    categoria = categorias[int(categoria) - 1].title()
+                    resultados = [p for p in resultados if p["categoria"] == categoria]
+                    break
+
 
         # Guarda el filtro usado y lo elimina de los filtros disponibles
         criterios_usados.append(criterio)
