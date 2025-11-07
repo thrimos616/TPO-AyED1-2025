@@ -14,7 +14,8 @@ def main():
             ("8", "Listar productos con bajo stock", mostrar_stock_bajo),
             ("9", "Registrar ventas", registrar_venta),
             ("10", "Mostrar reportes", mostrar_reportes),
-            ("11", "Exportar stock a csv", exportar_csv),
+            ("11", "Exportar stock a csv", exportar_stock_csv),
+            ("12", "Modificar Umbrales", modificar_umbrales),
             ("0", "Salir", None)
         ]
 
@@ -40,4 +41,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
