@@ -7,7 +7,7 @@ import json
 
 # Funciones genericas 
 
-def clear():
+def clear() -> None:
     """
     Limpia la pantalla de la terminal.
     
@@ -21,7 +21,7 @@ def clear():
     """
     os.system("cls" if os.name == "nt" else "clear")
 
-def cargar_ventas():
+def cargar_ventas() -> list[dict[str]]:
     """
     Lee ventas.csv y devuelve una lista de diccionarios
     
@@ -72,7 +72,7 @@ def cargar_ventas():
     return ventas
    
 
-def cargar_productos():
+def cargar_productos() -> list[dict[str]]:
 
     """
     Lee productos.csv y devuelve una lista de diccionarios
@@ -115,7 +115,7 @@ def cargar_productos():
 
     return productos
 
-def guardar_productos(productos):
+def guardar_productos(productos: list[dict[str]]) -> None:
     """
     Escribe la lista de productos en productos.csv
     
@@ -149,7 +149,7 @@ def guardar_productos(productos):
             archivo.write(fila + "\n")
 
 
-def cargar_stock():
+def cargar_stock() -> dict[str]:
     """
     Carga los datos del stock desde un archivo JSON.
     
@@ -181,7 +181,7 @@ def cargar_stock():
         "umbrales": {}
     }
 
-def guardar_stock(datos):
+def guardar_stock(datos: dict[str]) -> None:
     """
     Guarda los datos del stock en un archivo JSON.
     
@@ -211,7 +211,7 @@ def guardar_stock(datos):
         print("El archivo no pudo ser guardado.")
 
 # Funciones propias del sistema
-def registrar_accion(nombre_funcion) -> str:
+def registrar_accion(nombre_funcion: str) -> str:
     """
     Registra una acción realizada en el sistema en un archivo de historial.
     
@@ -238,6 +238,7 @@ def registrar_accion(nombre_funcion) -> str:
         "eliminar_carga_producto": "Eliminó una carga de producto",
         "modificar_producto": "Modificó un producto existente",
         "buscar_producto": "Buscó un producto en el stock",
+        "modificar_umbrales": "Se modifico el umbral de un producto"
     }
 
     descripcion = acciones.get(nombre_funcion, f"Ejecutó {nombre_funcion}")
@@ -269,7 +270,7 @@ def registrar_accion(nombre_funcion) -> str:
 
 
 # Funciones stock
-def agregar_stock(producto=None):
+def agregar_stock(producto: [int] = None) -> None: # Producto puede ser opcional
     """
     Agrega o actualiza productos en el stock.
     Muestra los productos disponibles desde productos.csv,
@@ -434,7 +435,7 @@ def agregar_stock(producto=None):
             print("===== OPCIÓN INCORRECTA =====")
 
 
-def modificar_stock():
+def modificar_stock() -> None:
     """
     Permite modificar una carga en el stock.
     El usuario puede cambiar el producto de la carga o la cantidad de unidades.
@@ -605,7 +606,7 @@ def modificar_stock():
 
 
 
-def eliminar_stock():
+def eliminar_stock() -> None:
     """
     Elimina un producto del stock
     Se le solicita al usuario el ID del producto a eliminar
@@ -714,7 +715,7 @@ def eliminar_stock():
 
 
 
-def listar_stock():
+def listar_stock() -> None:
     """
     Muestra el stock cargado en forma de tabla.
     Cada fila muestra: ID de carga, Producto, Capacidad, Cantidad.
@@ -742,7 +743,7 @@ def listar_stock():
 
     print(tabulate(stock, headers="keys", tablefmt="grid", showindex=False)) # Muestra el dic como una tabla
 
-def modificar_umbrales():
+def modificar_umbrales() -> None:
     """
     Permite al usuario modificar los valores minimos de los umbrales de los productos cargados en el stock
 
@@ -761,31 +762,38 @@ def modificar_umbrales():
     stock_data = cargar_stock()
     umbrales = stock_data.get("umbrales", {})
 
-    tipo_pintura = ["Látex Interior", "Látex Exterior", "Esmalte Sintético Brillante", "Esmalte Sintético Satinado",
-                    "Barniz Marino", "Convertidor de Óxido", "Enduido Plástico Interior",
-                    "Impermeabilizante para Techos", "Antihumedad"]
+    if not umbrales:
+        print("============= MODIFICAR UMBRALES DE STOCK =============")
+        print("No hay umbrales para modificar")
+        input("ENTER para volver al menú")
+        clear()
+        return
 
+
+    nombres=[]
 
     indice=1
 
     print("============= MODIFICAR UMBRALES DE STOCK =============")
     print("Umbrales actuales:")
     print("=======================================================")
-    for tipo, valor in umbrales.items():
-        print(f"{indice}. {tipo}: {valor}")
+    for nombre, valor in umbrales.items():
+        print(f"{indice}. {nombre}: {valor}")
+        nombres.append(nombre)
         indice+=1
     print("=======================================================\n")
 
     while True:
 
-        tipo_modificar = input("Ingrese el número del tipo de pintura a modificar su umbral(ENTER para salir): ").strip()
+        tipo_modificar = input("Ingrese el número del tipo de pintura a modificar su umbral (ENTER para salir): ").strip()
 
         try:
+
             if not tipo_modificar:
                 clear()
                 return
             else:
-                tipo_modificar = tipo_pintura[int(tipo_modificar) - 1]
+                tipo_modificar = nombres[int(tipo_modificar) - 1]
                 break
 
         except ValueError:
@@ -794,8 +802,8 @@ def modificar_umbrales():
             print("============= MODIFICAR UMBRALES DE STOCK =============")
             print("Umbrales actuales:")
             print("=======================================================")
-            for tipo, valor in umbrales.items():
-                print(f"{indice}. {tipo}: {valor}")
+            for nombre, valor in umbrales.items():
+                print(f"{indice}. {nombre}: {valor}")
                 indice += 1
             print("=======================================================")
             print("Debe ingresar un número\n")
@@ -826,6 +834,8 @@ def modificar_umbrales():
     stock_data["umbrales"] = umbrales
     guardar_stock(stock_data)
 
+    registrar_accion("modificar_umbrales")
+
     clear()
     print("=========== UMBRAL MODIFICADO CORRECTAMENTE ===========")
     print(f"{tipo_modificar}: Nuevo umbral → {nuevo_valor}")
@@ -848,7 +858,21 @@ def modificar_umbrales():
             print("=========== OPCIÓN INCORRECTA ===========")
 
 # Funciones productos
-def agregar_producto():
+
+def listar_productos() -> None:
+    """
+    Muestra por pantalla todos los productos del stock en forma de tabla
+    Cada producto debe mostrar: ID, tipo de pintura, capacidad (lts), cantidad, precio de la unidad
+    """
+
+    productos = cargar_productos()  # Variable para acceder a los productos
+
+    if not productos:
+        print("===== No hay productos cargados =====")
+
+    print(tabulate(productos, headers="keys", tablefmt="grid", showindex=False))  # Muestra el csv como una tabla
+
+def agregar_producto() -> None:
     """
     Permite al usuario agregar un producto nuevo al archivo productos.csv
     Se solicita: nombre, capacidad, categoria y precio.
@@ -994,17 +1018,17 @@ def agregar_producto():
             clear()
             print("===== OPCIÓN INCORRECTA =====")
 
-def eliminar_producto():
+def eliminar_producto() -> None:
     """
     Elimina un producto del catálogo de productos.
     El usuario selecciona el ID del producto a eliminar.
-    
+
     Precondiciones:
     - El archivo productos.csv debe existir y contener productos
     - El archivo stock_data.json debe existir (opcional)
     - El ID ingresado debe corresponder a un producto existente
     - El usuario debe confirmar la eliminación antes de proceder
-    
+
     Postcondiciones:
     - Se elimina el producto del archivo productos.csv
     - Se eliminan todas las cargas del producto del stock
@@ -1015,7 +1039,7 @@ def eliminar_producto():
     - El usuario puede eliminar múltiples productos en una misma sesión
     - En caso de no encontrar productos o ID inválido, se informa y retorna
     """
-    print("=========== ELIMINAR PRODUCTO ===========")
+
 
     productos = cargar_productos()
 
@@ -1025,14 +1049,16 @@ def eliminar_producto():
         clear()
         return
 
-    listar_productos()
 
     while True:
         # Elegir producto
+        print("=========== ELIMINAR PRODUCTO ===========")
+        listar_stock()
         try:
             id_eliminar = int(input("\nIngrese el ID del producto a eliminar: "))
             break
         except ValueError:
+            clear()
             print("Valor invalido, solo se aceptan numeros.")
 
     producto = None
@@ -1048,30 +1074,34 @@ def eliminar_producto():
         clear()
         return
 
-    confirmacion = int(
-        input(f"¿Desea eliminar el producto '{producto['nombre']}' ({producto['capacidad']})? (1: Si | 2: No): "))
+    confirmacion = input(f"¿Desea eliminar el producto '{producto['nombre']}' ({producto['capacidad']})? (1: Si | 2: No): ").strip()
+    while confirmacion not in ("1", "2"):
+        clear()
+        print("=========== ELIMINAR CARGA STOCK ===========")
+        print("Opción incorrecta")
+        confirmacion =input(f"¿Desea eliminar el producto '{producto['nombre']}' ({producto['capacidad']})? (1: Si | 2: No): ").strip()
 
     match confirmacion:
-        case 1:
+        case "1":
 
             # Eliminar producto del csv
             productos.remove(producto)
-            
-            # Elimina del stock y su umbral 
+
+            # Elimina del stock y su umbral
             stock_data = cargar_stock()
             stock = stock_data.get("stock", [])
             umbrales = stock_data.get("umbrales", {})
-            
+
             # Eliminar sus cargas al stock
             stock_actualizado = [p for p in stock if p.get("tipo") != producto['nombre']]
             stock_data["stock"] = stock_actualizado
-            
+
             # Eliminar al umbral (si existe)
             if producto['nombre'] in umbrales:
                 del umbrales[producto['nombre']]
                 stock_data["umbrales"] = umbrales
 
-        case 2:
+        case "2":
             print("==== Eliminacion cancelada ====")
             input("\nENTER para volver al menú")
             clear()
@@ -1105,17 +1135,17 @@ def eliminar_producto():
                 print("===== OPCIÓN INCORRECTA =====")
 
 
-def modificar_producto():
+def modificar_producto() -> None:
     """
     Modifica un producto existente del catálogo.
     El usuario puede cambiar: nombre, capacidad, categoría o precio.
-    
+
     Precondiciones:
     - El archivo productos.csv debe existir y contener productos
     - El ID ingresado debe corresponder a un producto existente
     - El usuario debe seleccionar un atributo válido para modificar (1-4)
     - Para precio, se debe ingresar un número entero positivo
-    
+
     Postcondiciones:
     - Se modifica el atributo seleccionado del producto en productos.csv
     - Se registra la acción en el historial del sistema
@@ -1128,6 +1158,8 @@ def modificar_producto():
     print("=========== MODIFICAR PRODUCTO ===========")
 
     productos = cargar_productos()  # Variable para acceder a los productos
+
+    categorias = ["Pintura", "Protector", "Preparación", "Impermeabilizante"]
 
     if not productos:
         print("===== No hay productos cargados =====")
@@ -1166,16 +1198,19 @@ def modificar_producto():
 
     clear()
 
-    print("Seleccione el atributo a modificar...\n")
-    print("1: Nombre | 2: Capacidad | 3: Categoría | 4: Precio\n")
 
-    try:
 
-        opcion = int(input("Seleccione una opcion (1-4): "))
+    while True:
+        print("Seleccione el atributo a modificar...\n")
+        print("1: Nombre | 2: Capacidad | 3: Categoría | 4: Precio\n")
+        try:
 
-    except ValueError:
+            opcion = int(input("Seleccione una opcion (1-4): "))
+            break
 
-        print("Valor invalido.")
+        except ValueError:
+            clear()
+            print("Valor invalido, ingrese una opción de 1 a 4")
 
     match opcion:
 
@@ -1186,30 +1221,62 @@ def modificar_producto():
 
         case 2:
 
-            nueva_capacidad = input("Ingrese la nueva capacidad (ej. 1L, 5L, 10L): ")
-            producto["capacidad"] = nueva_capacidad.strip()
+            # Capacidad
+            capacidad = input("Ingrese la capacidad (1|5|10|20): ").strip()
+            while capacidad not in ("1", "5", "10", "20"):
+                clear()
+                print("=========== AGREGAR PRODUCTO ===========")
+                print("Opción incorrecta")
+                capacidad = input("Ingrese la capacidad (1|5|10|20): ").strip()
+
+            medida = input("Medida en Litros o Kilogramos (1: L | 2: kg): ").strip()
+            while medida not in ("1", "2"):
+                clear()
+                print("=========== AGREGAR PRODUCTO ===========")
+                print("Opción incorrecta")
+                print(f"La capacidad ingresada es ({capacidad})")
+                medida = input("Medida en Litros o Kilogramos (1: L | 2: kg): ").strip()
+            if medida == "1":
+                capacidad += "L"
+            elif medida == "2":
+                capacidad += "kg"
+
+            producto["capacidad"] = capacidad
 
         case 3:
 
-            nueva_categoria = input("Ingrese la nueva categoria: ")
-            producto["categoria"] = nueva_categoria.strip()
+            while True:
+                # Muestra el listado de categorías
+                for i, x in enumerate(categorias):
+                    print(f"{i + 1}: {x}")
+                # Pide la categoría en número
+                categoria = input("\nQue categoría es: ").strip()
+                if categoria not in ("1", "2", "3", "4"):
+                    clear()
+                    print("=========== AGREGAR PRODUCTO ===========")
+                    print("Opción incorrecta\n")
+                else:
+                    categoria = categorias[int(categoria) - 1].title()
+                    producto["categoria"] = categoria
+                    break
 
         case 4:
+            while True:
+                try:
+                    nuevo_precio = int(input("Ingrese el nuevo precio: "))
 
-            try:
-                nuevo_precio = int(input("Ingrese el nuevo precio: "))
+                    if nuevo_precio > 0:
 
-                if nuevo_precio > 0:
+                        producto["precio"] = nuevo_precio
+                        break
 
-                    producto["precio"] = nuevo_precio
+                    else:
 
-                else:
+                        print("El precio debe ser mayor que 0")
 
-                    print("El precio debe ser mayor que 0")
+                except ValueError:
 
-            except ValueError:
-
-                print("Valor invalido, debe ser un numero.")
+                    print("Valor invalido, debe ser un numero.")
 
         case _:
 
@@ -1238,52 +1305,30 @@ def modificar_producto():
                 clear()
                 print("===== OPCIÓN INCORRECTA =====")
 
-
-def listar_productos():
-    """
-    Muestra por pantalla todos los productos del stock en forma de tabla
-    Cada producto debe mostrar: ID, tipo de pintura, capacidad (lts), cantidad, precio de la unidad
-    
-    Precondiciones:
-    - El archivo productos.csv debe existir (opcional)
-    - El módulo tabulate debe estar instalado y disponible
-    - La estructura de productos debe ser una lista de diccionarios con claves consistentes
-    
-    Postcondiciones:
-    - Muestra una tabla formateada con todos los productos del catálogo
-    - Los encabezados de la tabla corresponden a las claves de los diccionarios
-    - Si no hay productos cargados, muestra un mensaje informativo
-    - No modifica ningún dato, solo realiza una operación de lectura
-    - La tabla se muestra sin índices y con formato grid
-    - Los productos se muestran con: ID, nombre, capacidad, categoría y precio
-    """
-
-    productos = cargar_productos()  # Variable para acceder a los productos
-
-    if not productos:
-
-        print("===== No hay productos cargados =====")
-
-    print(tabulate(productos, headers="keys", tablefmt="grid", showindex=False)) # Muestra el csv como una tabla
-
-
 def buscar_producto() -> None:
     """
     Permite buscar productos en el stock por: tipo de pintura y/o capacidad
     Muestra los productos que coincidan con la busqueda
 
-    Precondiciones:
-    - El archivo debe tener encabezados válidos con las columnas (id,nombre,capacidad,precio,categoria)
-    - 'id' y 'precio' deben ser números enteros o convertibles a enteros
-    - 'capacidad' tiene que terminar con L o kg
-    - Deben funcionar las funciones clear(), cargar_productos() y registrar_accion()
-    - Debe importarse la función tabulate de la librería tabulate
+    PreCondiciones:
+    -El archivo debe tener encabezados válidos con las columnas (id,nombre,capacidad,precio,categoria)
 
-    Postcondiciones:
-    - Se imprimen en pantalla los productos que cumplen con los criterios de búsqueda en formato de tabla
-    - Si no hay resultados, se muestra que no se encontraron resultados
-    - Se registra la acción buscar_producto con registrar_accion()
-    - El usuario puede: volver al menú, realizar otra búsqueda, o aplicar más filtros sobre la búsqueda actual en caso de que haya más de un resultado
+    -id y precio deben ser números enteros o convertibles a enteros
+
+    -capacidad tiene que terminar con L o kg
+
+    -Deben funcionar las funciones clear(), cargar_productos() y registrar_accion()
+
+    -Debe importarse la función tabulate de la librería tabulate
+
+    PostCondiciones:
+    -Se imprimen en pantalla los productos que cumplen con los criterios de búsqueda en formato de tabla
+
+    -Si no hay resultados, se muestra que no se encontraron resultados
+
+    -Se registra la acción buscar_producto con registrar_accion()
+
+    -El usuario puede: volver al menú, realizar otra búsqueda, o aplicar más filtros sobre la búsqueda actual en caso de que haya más de un resultado
 
     """
     # Carga los datos desde el archivo JSON de stock
@@ -1297,8 +1342,6 @@ def buscar_producto() -> None:
         clear()
         return
 
-    # Lista de tipos de pintura disponibles
-    tipo_pintura = ["Látex Interior", "Látex Exterior", "Esmalte Sintético Brillante", "Esmalte Sintético Satinado", "Barniz Marino", "Convertidor de Óxido", "Enduido Plástico Interior", "Impermeabilizante para Techos", "Antihumedad"]
 
     #Lista de las categorías
     categorias = ["Pintura", "Protector", "Preparación", "Impermeabilizante"]
@@ -1315,7 +1358,7 @@ def buscar_producto() -> None:
     # Diccionario para mostrar los nombres en palabras de los filtros
     nombres_filtros = {
         "1": "ID",
-        "2": "Tipo de pintura",
+        "2": "Nombre",
         "3": "Capacidad",
         "4": "Precio",
         "5": "Categoría"
@@ -1323,7 +1366,7 @@ def buscar_producto() -> None:
 
     # Textos reutilizables para mostrar
     textos={"header":"=========== BUSCAR PRODUCTOS ===========",
-            "texto1":"Desea buscar por:\n1: ID\n2: Pintura\n3: Capacidad\n4: Precio\n5: Categoría \n0: Salir",
+            "texto1":"Desea buscar por:\n1: ID\n2: Nombre\n3: Capacidad\n4: Precio\n5: Categoría \n0: Salir",
             "menu":"1. Volver al menú\n2. Hacer otra búsqueda",
             "separador":"==========================================="}
 
@@ -1367,6 +1410,9 @@ def buscar_producto() -> None:
         if criterio == "1":
             while True:
                 try:
+
+                    listar_productos()
+
                     #Pide el id de carga y hace una lista con el resultado que encuentre
                     id_buscar = int(input("Ingrese el ID del producto: "))
                     resultados = [p for p in resultados if int(p["id"]) == id_buscar]
@@ -1377,24 +1423,10 @@ def buscar_producto() -> None:
                     print("El ID debe ser un número.")
 
 
-        # Si elige 2, Busca por tipo de pintura
+        # Si elige 2, Busca por nombre
         elif criterio == "2":
-            while True:
-                # Muestra el listado de tipos de pintura
-                for i,x in enumerate(tipo_pintura):
-                    print(f"{i+1}: {x}")
-                #Pide el tipo en número y válida si esta en los valores aceptados
-                tipo_buscar = input("\nQue tipo de pintura es: ").strip()
-                if tipo_buscar not in ("1", "2", "3", "4", "5", "6", "7", "8", "9"):
-                    clear()
-                    print(textos["header"])
-                    print("Opción incorrecta\n")
-                else:
-                    break
-
-            #Pasa el número ingresado a el tipo expresado en palabras y hace una lista con los tipos que coincidan
-            tipo_buscar = tipo_pintura[int(tipo_buscar) - 1].title()
-            resultados = [p for p in resultados if p["nombre"] == tipo_buscar]
+            nombre = input("\nIngrese el nombre de la pintura: ").strip().title()
+            resultados = [p for p in resultados if p["nombre"] == nombre]
 
 
         # Si elige 3, Busca por capacidad
@@ -1416,7 +1448,7 @@ def buscar_producto() -> None:
                 try:
                     #Pide el precio y hace una lista con los valores que coincidan
                     precio_buscar = int(input("Ingrese el precio: "))
-                    resultados = [p for p in resultados if p["precio_unidad"] == precio_buscar]
+                    resultados = [p for p in resultados if int(p["precio"]) == precio_buscar]
                     break
                 except ValueError:
                     clear()
@@ -1520,7 +1552,7 @@ def buscar_producto() -> None:
             print("=========== OPCIÓN INCORRECTA ===========")
 
 
-def registrar_venta():
+def registrar_venta() -> None:
     """
     Registra una venta, actualiza el stock y guarda en ventas.csv (sin librería csv).
     
@@ -1543,11 +1575,6 @@ def registrar_venta():
     """
     print("=========== REGISTRAR VENTA ===========")
 
-    # Importar módulos necesarios
-    import json
-    import os
-    from datetime import datetime
-    
     # Cargar datos necesarios
     stock_data = cargar_stock()
     stock = stock_data.get("stock", [])
@@ -1556,13 +1583,24 @@ def registrar_venta():
     if not stock:
         print("No hay productos disponibles para vender.")
         input("Presione ENTER para volver al menú...")
+        clear()
         return
+
+    #Flag para saber si al menos un producto tiene stock
+    hay_stock=False
 
     # Mostrar productos disponibles en stock
     print("\n--- PRODUCTOS DISPONIBLES EN STOCK ---")
     for producto in stock:
-        print(f"ID: {producto['id']} - {producto['tipo']} {producto['capacidad']} - Stock: {producto['cantidad']}")
-    print("--------------------------------------")
+        if producto["cantidad"]>0:
+            hay_stock=True
+            print(f"ID: {producto['id']} - {producto['tipo']} {producto['capacidad']} - Stock: {producto['cantidad']}")
+            print("--------------------------------------")
+    if not hay_stock:
+        print("No hay productos disponibles para vender.")
+        input("Presione ENTER para volver al menú...")
+        clear()
+        return
 
     # --- Solicitar ID del producto ---
     while True:
@@ -1790,7 +1828,7 @@ def mostrar_stock_bajo() -> None:
             return
 
 
-def mostrar_ventas():
+def mostrar_ventas() -> None:
     """
     Muestra las ventas y su fecha de realizacion
     
@@ -1861,7 +1899,7 @@ def mostrar_ventas():
             print("===== OPCIÓN INCORRECTA =====")
 
 
-def exportar_stock_csv():
+def exportar_stock_csv() -> None:
     """
     Exporta todos los datos del stock a un archivo CSV
     
