@@ -8,10 +8,36 @@ import json
 # Funciones genericas 
 
 def clear():
+    """
+    Limpia la pantalla de la terminal.
+    
+    Precondiciones:
+    - El sistema operativo debe ser Windows (nt) o Unix/Linux/Mac
+    - El comando 'cls' (Windows) o 'clear' (Unix) debe estar disponible en el sistema
+    
+    Postcondiciones:
+    - La pantalla de la terminal queda limpia
+    - El cursor se posiciona en la parte superior izquierda de la terminal
+    """
     os.system("cls" if os.name == "nt" else "clear")
 
 def cargar_ventas():
-    """Lee ventas.csv y devuelve una lista de diccionarios"""
+    """
+    Lee ventas.csv y devuelve una lista de diccionarios
+    
+    Precondiciones:
+    - El archivo ventas.csv debe existir en el directorio actual (opcional)
+    - El archivo debe tener encoding UTF-8
+    - La primera línea debe contener los encabezados separados por comas
+    - Cada línea subsiguiente debe representar una venta con los mismos campos que el encabezado
+    
+    Postcondiciones:
+    - Retorna una lista de diccionarios donde cada diccionario representa una venta
+    - Las claves de los diccionarios corresponden a los encabezados del CSV
+    - Si el archivo no existe, retorna una lista vacía
+    - Si ocurre un error durante la lectura, se muestra un mensaje y retorna lista vacía
+    - Las líneas mal formateadas o vacías son omitidas
+    """
     
     ventas = []
     
@@ -48,7 +74,22 @@ def cargar_ventas():
 
 def cargar_productos():
 
-    """Lee productos.csv y devuelve una lista de diccionarios"""
+    """
+    Lee productos.csv y devuelve una lista de diccionarios
+    
+    Precondiciones:
+    - El archivo productos.csv debe existir en el directorio actual (opcional)
+    - El archivo debe tener encoding UTF-8
+    - La primera línea debe contener los encabezados separados por comas
+    - Cada línea subsiguiente debe representar un producto con los mismos campos que el encabezado
+    
+    Postcondiciones:
+    - Retorna una lista de diccionarios donde cada diccionario representa un producto
+    - Las claves de los diccionarios corresponden a los encabezados del CSV
+    - Si el archivo no existe, muestra un mensaje y retorna una lista vacía
+    - Si el archivo existe pero está vacío, retorna una lista vacía
+    - No se realiza validación de los tipos de datos en los valores
+    """
 
     productos = []
 
@@ -75,7 +116,21 @@ def cargar_productos():
     return productos
 
 def guardar_productos(productos):
-    """Escribe la lista de productos en productos.csv"""
+    """
+    Escribe la lista de productos en productos.csv
+    
+    Precondiciones:
+    - `productos` debe ser una lista de diccionarios
+    - Todos los diccionarios en la lista deben tener las mismas claves
+    - Los valores de los diccionarios deben ser convertibles a string
+    
+    Postcondiciones:
+    - Se crea o sobrescribe el archivo productos.csv en el directorio actual
+    - Si la lista está vacía, se crea un archivo con solo el encabezado por defecto
+    - La primera línea del archivo contiene los encabezados (claves del primer diccionario)
+    - Cada línea subsiguiente representa un producto con sus valores separados por comas
+    - El encoding del archivo es UTF-8
+    """
 
     with open("productos.csv", "w", encoding="utf-8") as archivo:
 
@@ -93,29 +148,54 @@ def guardar_productos(productos):
             fila = ",".join(map(str, producto.values()))
             archivo.write(fila + "\n")
 
+
 def cargar_stock():
     """
-    Carga los datos del stock desde un json
-    Inicia la lista "stock" con los productos existentes
-    """
+    Carga los datos del stock desde un archivo JSON.
     
+    Precondiciones:
+    - El archivo stock_data.json debe existir en el directorio actual (opcional)
+    - El archivo debe tener formato JSON válido
+    - El archivo debe tener encoding UTF-8
+    - La estructura esperada es un diccionario con claves "stock" y "umbrales"
+    
+    Postcondiciones:
+    - Si el archivo existe y es válido, retorna el diccionario completo del JSON
+    - Si el archivo no existe o tiene formato inválido, retorna una estructura por defecto
+    - La estructura por defecto contiene: {"stock": [], "umbrales": {}}
+    - En caso de error, se muestra un mensaje informativo
+    """
+
     try:
 
         with open("stock_data.json", "r", encoding="utf-8") as stockdata_json:
-            
-            data = json.load(stockdata_json)
-            
-            return data
+
+            return json.load(stockdata_json)
 
     except (FileNotFoundError, json.JSONDecodeError):
 
-        print("Archivo no encontrado.")
+        print("Archivo no encontrado")
 
-        return {"stock": [], "umbrales": {}}
+        return  {
+        "stock": [],
+        "umbrales": {}
+    }
 
 def guardar_stock(datos):
     """
-    Guarda los datos del stock en un json
+    Guarda los datos del stock en un archivo JSON.
+    
+    Precondiciones:
+    - `datos` debe ser un diccionario serializable a JSON
+    - La estructura esperada es un diccionario con claves "stock" y "umbrales"
+    - Debe tener permisos de escritura en el directorio actual
+    
+    Postcondiciones:
+    - Se crea o sobrescribe el archivo stock_data.json en el directorio actual
+    - El archivo se guarda con encoding UTF-8
+    - Se preservan caracteres especiales y tildes (ensure_ascii=False)
+    - El formato incluye indentación de 4 espacios para mejor legibilidad
+    - En caso de error de escritura, se muestra un mensaje informativo
     """
 
     try: 
@@ -131,10 +211,23 @@ def guardar_stock(datos):
         print("El archivo no pudo ser guardado.")
 
 # Funciones propias del sistema
-
 def registrar_accion(nombre_funcion) -> str:
     """
-    Evalua que accion fue realizada en el sistema y la registra en un historial
+    Registra una acción realizada en el sistema en un archivo de historial.
+    
+    Precondiciones:
+    - `nombre_funcion` debe ser un string que identifique la acción
+    - Debe existir el módulo datetime importado
+    - Debe existir el módulo os importado
+    - Debe tener permisos de lectura/escritura en el directorio del script
+    
+    Postcondiciones:
+    - Crea o actualiza el archivo "historial.txt" en el mismo directorio del script
+    - Si el archivo no existe, lo crea con un encabezado
+    - Agrega una nueva línea con timestamp y descripción de la acción
+    - Retorna un string con la línea registrada
+    - En caso de error, muestra mensaje informativo pero no interrumpe ejecución
+    - Las acciones conocidas tienen descripciones predefinidas, las desconocidas usan nombre genérico
     """
 
     fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -181,6 +274,19 @@ def agregar_stock(producto=None):
     Agrega o actualiza productos en el stock.
     Muestra los productos disponibles desde productos.csv,
     solicita capacidad, cantidad, precio y, si es necesario, el umbral mínimo de stock.
+    
+    Precondiciones:
+    - Los archivos stock_data.json y productos.csv deben existir (opcional)
+    - Si se proporciona `producto`, debe ser un ID válido existente en productos.csv
+    - Los módulos necesarios (clear, cargar_stock, cargar_productos, etc.) deben estar disponibles
+    
+    Postcondiciones:
+    - Se actualiza el stock_data.json con la nueva carga de producto
+    - Si no existe umbral para el producto, se solicita y guarda uno nuevo
+    - Se genera un nuevo ID único para la carga en el stock
+    - Se registra la acción en el historial del sistema
+    - El usuario puede elegir volver al menú o agregar más stock
+    - En caso de productos no cargados, se informa y retorna al menú
     """
     print("=========== AGREGAR STOCK ===========")
 
@@ -332,6 +438,20 @@ def modificar_stock():
     """
     Permite modificar una carga en el stock.
     El usuario puede cambiar el producto de la carga o la cantidad de unidades.
+    
+    Precondiciones:
+    - Los archivos stock_data.json y productos.csv deben existir
+    - Debe haber al menos una carga en el stock para modificar
+    - Los IDs de carga en el stock deben ser únicos
+    - Los IDs de producto en productos.csv deben ser válidos
+    
+    Postcondiciones:
+    - Se actualiza el stock_data.json con los cambios realizados
+    - El usuario puede modificar el producto o la cantidad de una carga existente
+    - Se registra la acción en el historial del sistema
+    - Se mantiene la integridad de los datos (IDs únicos, referencias válidas)
+    - El usuario puede elegir volver al menú o modificar otra carga
+    - En caso de stock vacío, se informa y retorna al menú
     """
 
     print("=========== MODIFICAR STOCK ===========")
@@ -489,6 +609,21 @@ def eliminar_stock():
     """
     Elimina un producto del stock
     Se le solicita al usuario el ID del producto a eliminar
+    
+    Precondiciones:
+    - El archivo stock_data.json debe existir y contener datos de stock
+    - Debe haber al menos una carga en el stock para eliminar
+    - Los IDs de carga en el stock deben ser únicos y válidos
+    - El usuario debe conocer el ID de la carga a eliminar
+    
+    Postcondiciones:
+    - Se elimina permanentemente la carga seleccionada del stock
+    - Se actualiza el archivo stock_data.json sin la carga eliminada
+    - Se registra la acción en el historial del sistema
+    - Se solicita confirmación antes de proceder con la eliminación
+    - El usuario puede elegir volver al menú o eliminar otra carga
+    - En caso de stock vacío, se informa y retorna al menú
+    - Si el ID no existe, se informa y retorna al menú
     """
 
     stock_data = cargar_stock()  # Carga todo el json (productos y umbrales)
@@ -583,6 +718,18 @@ def listar_stock():
     """
     Muestra el stock cargado en forma de tabla.
     Cada fila muestra: ID de carga, Producto, Capacidad, Cantidad.
+    
+    Precondiciones:
+    - El archivo stock_data.json debe existir (opcional)
+    - El módulo tabulate debe estar instalado y disponible
+    - La estructura del stock debe ser una lista de diccionarios con claves consistentes
+    
+    Postcondiciones:
+    - Muestra una tabla formateada con todos los productos en stock
+    - Los encabezados de la tabla corresponden a las claves de los diccionarios
+    - Si no hay productos en stock, muestra un mensaje informativo
+    - No modifica ningún dato, solo realiza una operación de lectura
+    - La tabla se muestra sin índices y con formato grid
     """
     
     stock_data = cargar_stock() # Carga todo el json
@@ -596,6 +743,20 @@ def listar_stock():
     print(tabulate(stock, headers="keys", tablefmt="grid", showindex=False)) # Muestra el dic como una tabla
 
 def modificar_umbrales():
+    """
+    Permite al usuario modificar los valores minimos de los umbrales de los productos cargados en el stock
+
+    Precondiciones:
+    - Deben funcionar las funciones clear(), cargar_stock(), guardar_stock()
+    - El archivo json debe tener un diccionario con una clave "umbrales" que contenga otro diccionario
+    - Los valores de los umbrales deben ser enteros o convertibles a enteros
+
+    Postcondiciones:
+    - Si no existen umbrales cargados informa por pantalla y unicamente permite volver al menú
+    - Cuando se ingresa el nombre de un producto y un nuevo umbral se modifica en stock_data.json y se informa por pantalla
+    que se modifico correctamente
+    - Al final el usuario puede volver al menú o realizar otra modificación
+    """
 
     stock_data = cargar_stock()
     umbrales = stock_data.get("umbrales", {})
@@ -691,6 +852,23 @@ def agregar_producto():
     """
     Permite al usuario agregar un producto nuevo al archivo productos.csv
     Se solicita: nombre, capacidad, categoria y precio.
+    
+    Precondiciones:
+    - El archivo productos.csv debe existir (opcional, se crea si no existe)
+    - El usuario debe ingresar datos válidos según las opciones predefinidas
+    - Las categorías deben estar predefinidas en la lista categorias
+    - Las capacidades deben ser una de: 1, 5, 10, 20
+    - Las medidas deben ser: 1 (L) o 2 (kg)
+    
+    Postcondiciones:
+    - Se agrega un nuevo producto al archivo productos.csv con ID incremental
+    - Se valida que la capacidad sea una de las opciones permitidas
+    - Se valida que la medida sea Litros o Kilogramos
+    - Se valida que la categoría sea una de las opciones predefinidas
+    - Se valida que el precio sea un número entero positivo
+    - Se registra la acción en el historial del sistema
+    - Se ofrece la opción de agregar stock inicial al producto
+    - El usuario puede agregar múltiples productos en una misma sesión
     """
     print("=========== AGREGAR PRODUCTO ===========")
 
@@ -820,6 +998,22 @@ def eliminar_producto():
     """
     Elimina un producto del catálogo de productos.
     El usuario selecciona el ID del producto a eliminar.
+    
+    Precondiciones:
+    - El archivo productos.csv debe existir y contener productos
+    - El archivo stock_data.json debe existir (opcional)
+    - El ID ingresado debe corresponder a un producto existente
+    - El usuario debe confirmar la eliminación antes de proceder
+    
+    Postcondiciones:
+    - Se elimina el producto del archivo productos.csv
+    - Se eliminan todas las cargas del producto del stock
+    - Se elimina el umbral asociado al producto si existe
+    - Se registra la acción en el historial del sistema
+    - Se actualizan tanto productos.csv como stock_data.json
+    - Se muestra confirmación de lo que fue eliminado
+    - El usuario puede eliminar múltiples productos en una misma sesión
+    - En caso de no encontrar productos o ID inválido, se informa y retorna
     """
     print("=========== ELIMINAR PRODUCTO ===========")
 
@@ -915,6 +1109,21 @@ def modificar_producto():
     """
     Modifica un producto existente del catálogo.
     El usuario puede cambiar: nombre, capacidad, categoría o precio.
+    
+    Precondiciones:
+    - El archivo productos.csv debe existir y contener productos
+    - El ID ingresado debe corresponder a un producto existente
+    - El usuario debe seleccionar un atributo válido para modificar (1-4)
+    - Para precio, se debe ingresar un número entero positivo
+    
+    Postcondiciones:
+    - Se modifica el atributo seleccionado del producto en productos.csv
+    - Se registra la acción en el historial del sistema
+    - Se valida que el nuevo precio sea un número positivo
+    - Se muestra confirmación de la modificación exitosa
+    - El usuario puede modificar múltiples productos en una misma sesión
+    - En caso de productos no cargados o ID inválido, se informa y retorna
+    - No se realizan validaciones específicas para nombre, capacidad o categoría
     """
     print("=========== MODIFICAR PRODUCTO ===========")
 
@@ -1034,6 +1243,19 @@ def listar_productos():
     """
     Muestra por pantalla todos los productos del stock en forma de tabla
     Cada producto debe mostrar: ID, tipo de pintura, capacidad (lts), cantidad, precio de la unidad
+    
+    Precondiciones:
+    - El archivo productos.csv debe existir (opcional)
+    - El módulo tabulate debe estar instalado y disponible
+    - La estructura de productos debe ser una lista de diccionarios con claves consistentes
+    
+    Postcondiciones:
+    - Muestra una tabla formateada con todos los productos del catálogo
+    - Los encabezados de la tabla corresponden a las claves de los diccionarios
+    - Si no hay productos cargados, muestra un mensaje informativo
+    - No modifica ningún dato, solo realiza una operación de lectura
+    - La tabla se muestra sin índices y con formato grid
+    - Los productos se muestran con: ID, nombre, capacidad, categoría y precio
     """
 
     productos = cargar_productos()  # Variable para acceder a los productos
@@ -1049,6 +1271,20 @@ def buscar_producto() -> None:
     """
     Permite buscar productos en el stock por: tipo de pintura y/o capacidad
     Muestra los productos que coincidan con la busqueda
+
+    Precondiciones:
+    - El archivo debe tener encabezados válidos con las columnas (id,nombre,capacidad,precio,categoria)
+    - 'id' y 'precio' deben ser números enteros o convertibles a enteros
+    - 'capacidad' tiene que terminar con L o kg
+    - Deben funcionar las funciones clear(), cargar_productos() y registrar_accion()
+    - Debe importarse la función tabulate de la librería tabulate
+
+    Postcondiciones:
+    - Se imprimen en pantalla los productos que cumplen con los criterios de búsqueda en formato de tabla
+    - Si no hay resultados, se muestra que no se encontraron resultados
+    - Se registra la acción buscar_producto con registrar_accion()
+    - El usuario puede: volver al menú, realizar otra búsqueda, o aplicar más filtros sobre la búsqueda actual en caso de que haya más de un resultado
+
     """
     # Carga los datos desde el archivo JSON de stock
     stock = cargar_productos()
@@ -1285,8 +1521,26 @@ def buscar_producto() -> None:
 
 
 def registrar_venta():
-    """Registra una venta, actualiza el stock y guarda en ventas.csv (sin librería csv)."""
-
+    """
+    Registra una venta, actualiza el stock y guarda en ventas.csv (sin librería csv).
+    
+    Precondiciones:
+    - Los archivos stock_data.json y productos.csv deben existir
+    - Debe haber al menos un producto disponible en el stock
+    - El ID del producto debe existir en el stock
+    - La cantidad vendida no debe exceder el stock disponible
+    - El precio debe ser un número positivo (se busca automáticamente o se ingresa manualmente)
+    
+    Postcondiciones:
+    - Se actualiza el stock restando la cantidad vendida
+    - Se genera un nuevo registro en ventas.csv con ID autoincremental
+    - Se incluye timestamp de la venta, datos del producto, cantidad, precios y método de pago
+    - Se valida el método de pago (Efectivo/Tarjeta/Transferencia)
+    - Si no se encuentra el precio en productos.csv, se solicita ingreso manual
+    - Se muestra confirmación detallada de la venta registrada
+    - El usuario puede registrar múltiples ventas en una misma sesión
+    - En caso de error al guardar, se informa y se cancela la operación
+    """
     print("=========== REGISTRAR VENTA ===========")
 
     # Importar módulos necesarios
@@ -1478,6 +1732,19 @@ def mostrar_stock_bajo() -> None:
     """
     Muestra todos los productos cuyo stock sea menor a un valor mínimo
     Sirve para identificar productos que deben reponerse
+
+    Precondiciones:
+    - Deben funcionar las funciones clear(), cargar_productos() y registrar_accion()
+    - El json debe tener una estructura correcta, conteniendo una clave de "stock", que sea una lista de diccionarios
+    donde cada diccionario representa un producto con las claves "tipo" y "cantidad", Y una clave de "umbrales" con un diccionario que relacione
+    cada tipo de pintura con su cantidad minima permitida
+    - Los valores de "cantidad" y de los umbrales deben ser enteros o convertibles a enteros
+    - Debe importarse la función tabulate de la librería tabulate
+
+    Postcondiciones:
+    - Si el stock está vacío, se muestra el mensaje "No hay productos cargados." y la función termina
+    - Si existen productos con cantidad menor o igual a su umbral se muestran en formato de tabla en páginas de 5 productos
+    - Si ningun producto esta debajo de su umbral, muestra un mensaje informandolo y permite volver al menú
     """
     # Carga los datos desde el archivo JSON
     stock_data = cargar_stock()
@@ -1523,9 +1790,23 @@ def mostrar_stock_bajo() -> None:
             return
 
 
-def mostrar_reportes():
+def mostrar_ventas():
     """
-    Muestra los reportes de ventas por fecha
+    Muestra las ventas y su fecha de realizacion
+    
+    Precondiciones:
+    - El archivo ventas.csv debe existir (opcional)
+    - El módulo tabulate debe estar instalado y disponible
+    - Las ventas deben tener la estructura esperada con los campos requeridos
+    
+    Postcondiciones:
+    - Muestra todas las ventas registradas en formato de tabla ordenada
+    - Los datos incluyen: ID venta, fecha/hora, ID producto, nombre, categoría, cantidad, precios y método de pago
+    - Los precios se muestran formateados con símbolo de dólar
+    - Si no hay ventas registradas, se informa y retorna al menú
+    - No modifica ningún dato, solo realiza una operación de lectura
+    - Proporciona opción para volver al menú principal
+    - La tabla utiliza formato grid para mejor visualización
     """
     print("=========== REPORTES ===========")
 
@@ -1583,6 +1864,21 @@ def mostrar_reportes():
 def exportar_stock_csv():
     """
     Exporta todos los datos del stock a un archivo CSV
+    
+    Precondiciones:
+    - El archivo stock_data.json debe existir y contener datos de stock
+    - Debe haber permisos de escritura en el directorio actual
+    - La estructura del stock debe ser una lista de diccionarios con las claves esperadas
+    
+    Postcondiciones:
+    - Crea o sobrescribe el archivo "stock_exportado.csv" en el directorio actual
+    - El archivo incluye encabezados: id, tipo, capacidad, cantidad
+    - Cada línea representa un producto del stock con sus datos separados por comas
+    - El encoding del archivo es UTF-8 para soportar caracteres especiales
+    - Muestra confirmación del número de productos exportados
+    - En caso de stock vacío, informa y no crea el archivo
+    - Proporciona opción para volver al menú principal
+    - En caso de error durante la exportación, se informa el problema
     """
     print("=========== EXPORTAR STOCK A CSV ===========")
  

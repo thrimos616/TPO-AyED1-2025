@@ -47,3 +47,4 @@
 [2025-11-06 22:07:33] Ejecutó eliminar_producto
 [2025-11-06 22:11:03] Buscó un producto en el stock
 [2025-11-06 22:11:13] Buscó un producto en el stock
+[2025-11-06 23:47:16] Agregó un nuevo producto al stock

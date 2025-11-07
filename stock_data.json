@@ -27,6 +27,13 @@
             "capacidad": "10L",
             "cantidad": 47,
             "categoria": "Preparación"
+        },
+        {
+            "id": 5,
+            "tipo": "Antihumedad",
+            "capacidad": "4L",
+            "cantidad": 15,
+            "categoria": "Preparación"
         }
     ],
     "umbrales": {
