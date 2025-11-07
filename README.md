@@ -24,7 +24,7 @@ Todo el funcionamiento se realiza mediante una **interfaz por consola**, con una
 ### 🔹 Funciones adicionales
 - **Registrar venta:** descuenta del stock los productos vendidos y guarda la operación en un csv.
 - **Mostrar stock bajo:** muestra productos con menos de una cantidad mínima definida (por ejemplo, 5 unidades).
-- **Mostrar reportes:** genera estadísticas del stock (valor total, productos más o menos disponibles, etc.).
+- **Mostrar ventas:** muestra en una tabla todas las ventas y su fecha de realizacion.
 - **Exportar a CSV:** crea un archivo con todo el stock actual, compatible con Excel o Google Sheets.
 
 ---
@@ -38,4 +38,5 @@ sistema_stock_tpo/
 │
 ├── productos.csv          # Catálogo de productos (id, tipo, capacidad, precio_unidad)
 ├── stock_data.json        # Datos del stock y umbrales de reposición
+├── ventas.csv             # Datos de las ventas realizadas 
 └── historial.txt          # Registro de operaciones (ventas, altas, bajas, etc.)
