@@ -3,19 +3,20 @@ from funciones_crud import *
 
 def main():
 
-    cargar_datos()
-
     while True:
         opciones = [
-            ("1", "Agregar producto", agregar_producto),
-            ("2", "Modificar producto", modificar_producto),
-            ("3", "Eliminar producto", eliminar_carga_producto),
-            ("4", "Buscar producto", buscar_producto),
-            ("5", "Listar productos con bajo stock", mostrar_stock_bajo),
-            ("6", "Registrar ventas", registrar_venta),
-            ("7", "Mostrar reportes", mostrar_reportes),
-            ("8", "Exportar stock a csv", exportar_csv),
-            ("9", "Modificar umbrales", modificar_umbrales),
+            ("1", "Agregar stock", agregar_stock),
+            ("2", "Modificar stock", modificar_stock),
+            ("3", "Eliminar stock", eliminar_stock),
+            ("4", "Agregar producto", agregar_producto),
+            ("5", "Eliminar producto", eliminar_producto),
+            ("6", "Modificar producto", modificar_producto),
+            ("7", "Buscar producto", buscar_producto),
+            ("8", "Listar productos con bajo stock", mostrar_stock_bajo),
+            ("9", "Registrar ventas", registrar_venta),
+            ("10", "Mostrar reportes", mostrar_reportes),
+            ("11", "Exportar stock a csv", exportar_csv),
+            ("12", "Modificar Umbrales", modificar_umbrales),
             ("0", "Salir", None)
         ]
 

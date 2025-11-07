@@ -1,0 +1,99 @@
+{
+    "stock": [
+        {
+            "id": 1,
+            "tipo": "Látex Interior",
+            "capacidad": "1L",
+            "cantidad": 1,
+            "categoria": "Pintura"
+        },
+        {
+            "id": 2,
+            "tipo": "Látex Exterior",
+            "capacidad": "1L",
+            "cantidad": 2,
+            "categoria": "Pintura"
+        },
+        {
+            "id": 3,
+            "tipo": "Esmalte Sintético Brillante",
+            "capacidad": "1L",
+            "cantidad": 2,
+            "categoria": "Pintura"
+        },
+        {
+            "id": 4,
+            "tipo": "Látex Interior",
+            "capacidad": "1L",
+            "cantidad": 2,
+            "categoria": "Pintura"
+        },
+        {
+            "id": 5,
+            "tipo": "Látex Interior",
+            "capacidad": "1L",
+            "cantidad": 2,
+            "categoria": "Pintura"
+        },
+        {
+            "id": 6,
+            "tipo": "Esmalte Sintético Satinado",
+            "capacidad": "1L",
+            "cantidad": 1,
+            "categoria": "Pintura"
+        },
+        {
+            "id": 7,
+            "tipo": "Barniz Marino",
+            "capacidad": "1L",
+            "cantidad": 1,
+            "categoria": "Pintura"
+        },
+        {
+            "id": 8,
+            "tipo": "Antihumedad",
+            "capacidad": "1L",
+            "cantidad": 1,
+            "categoria": "Pintura"
+        },
+        {
+            "id": 9,
+            "tipo": "Látex Exterior",
+            "capacidad": "1L",
+            "cantidad": 1,
+            "categoria": "Pintura"
+        },
+        {
+            "id": 10,
+            "tipo": "Látex Exterior",
+            "capacidad": "1L",
+            "cantidad": 1,
+            "categoria": "Pintura"
+        },
+        {
+            "id": 11,
+            "tipo": "Látex Exterior",
+            "capacidad": "1L",
+            "cantidad": 1,
+            "categoria": "Pintura"
+        },
+        {
+            "id": 12,
+            "tipo": "Látex Interior",
+            "capacidad": "1L",
+            "cantidad": 1,
+            "categoria": "Pintura"
+        }
+    ],
+    "umbrales": {
+        "Látex Interior": 1,
+        "Látex Exterior": 2,
+        "Esmalte Sintético Brillante": 2,
+        "Esmalte Sintético Satinado": 1,
+        "Barniz Marino": 1,
+        "Convertidor de Óxido": null,
+        "Enduido Plástico Interior": null,
+        "Impermeabilizante para Techos": null,
+        "Antihumedad": 1
+    }
+}
