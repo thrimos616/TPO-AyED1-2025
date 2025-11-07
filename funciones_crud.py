@@ -958,6 +958,24 @@ def listar_productos():
 
 
 def modificar_umbrales():
+    """
+    Permite al usuario modificar los valores minimos de los umbrales de los productos cargados en el stock
+
+    PreCondiciones:
+    -Deben funcionar las funciones clear(), cargar_stock(), guardar_stock()
+
+    -El archivo json debe tener un diccionario con una clave "umbrales" que contenga otro diccionario
+
+    -Los valores de los umbrales deben ser enteros o convertibles a enteros
+
+    PostCondiciones:
+    -Si no existen umbrales cargados informa por pantalla y unicamente permite volver al menú
+
+    -Cuando se ingresa el nombre de un producto y un nuevo umbral se modifica en stock_data.json y se informa por pantalla
+    que se modifico correctamente
+
+    -Al final el usuario puede volver al menú o realizar otra modificación
+    """
 
     stock_data = cargar_stock()
     umbrales = stock_data.get("umbrales", {})
